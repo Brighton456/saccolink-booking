@@ -22,10 +22,11 @@ interface TicketRow {
   receipt_code: string; created_at: string;
   boarding_station_id?: string | null; destination_station_id?: string | null;
 }
-interface RouteStop { id: string; route_id: string; station_id: string; sequence_no: number; segment_fare: number; stations?: Station; }
+interface RouteStop { id: string; route_id: string; station_id: string; sequence_no: number; segment_fare: number; cumulative_fare: number; stations?: Station; }
 interface SearchResult {
   trip: TripRow; departure: string; arrival: string; availableSeats: number;
   vehicleType: string; plate: string; saccoName: string; price: number;
+  routePasses: boolean;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -77,6 +78,7 @@ function App() {
   const [allTrips, setAllTrips] = useState<TripRow[]>([]);
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [routeStops, setRouteStops] = useState<RouteStop[]>([]);
+  const [saccosMap, setSaccosMap] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
 
   /* Fetch all public data on mount */
@@ -87,6 +89,15 @@ function App() {
       const tRes = await supabase.from("trips").select("*, routes(*), vehicles(*), drivers(*), saccos(id, name)").gte("scheduled_at", today()).lte("scheduled_at", today() + "T23:59:59").order("scheduled_at");
       const tripData = (tRes.data as TripRow[]) ?? [];
       setAllTrips(tripData);
+      const smap = new Map<string, string>();
+      for (const t of tripData) {
+        if ((t as any).saccos?.name && t.sacco_id) smap.set(t.sacco_id, (t as any).saccos.name);
+      }
+      if (smap.size === 0) {
+        const sacRes = await supabase.from("saccos" as any).select("id, name" as any);
+        for (const s of (sacRes.data ?? []) as any[]) smap.set(s.id, s.name);
+      }
+      setSaccosMap(smap);
       // Fetch route_stops via direct REST (table not in generated types)
       const mpesaUrl = import.meta.env["VITE_SUPABASE_URL"] as string;
       const mpesaKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string;
@@ -150,7 +161,7 @@ function App() {
       <main className="flex-1 flex flex-col">
         {view === "HOME" && <HomeView stations={stations} onSearch={handleSearch} loading={loading} />}
         {view === "RESULTS" && searchParams && (
-          <ResultsView params={searchParams} allTrips={allTrips} tickets={tickets} stations={stations} routeStops={routeStops} onSelect={selectTrip} onBack={() => go("HOME")} />
+          <ResultsView params={searchParams} allTrips={allTrips} tickets={tickets} stations={stations} routeStops={routeStops} saccosMap={saccosMap} onSelect={selectTrip} onBack={() => go("HOME")} />
         )}
         {view === "SEATS" && selectedTrip && (
           <SeatsView result={selectedTrip} tickets={tickets} onConfirm={confirmSeats} onBack={() => go("RESULTS")} />
@@ -364,9 +375,9 @@ function HomeView({ stations, onSearch, loading }: { stations: Station[]; onSear
 /* ═══════════════════════════════════════════════════════════════════════
    SEARCH RESULTS VIEW
    ═══════════════════════════════════════════════════════════════════════ */
-function ResultsView({ params, allTrips, tickets, stations, routeStops, onSelect, onBack }: {
+function ResultsView({ params, allTrips, tickets, stations, routeStops, saccosMap, onSelect, onBack }: {
   params: { origin: string; destination: string; date: string };
-  allTrips: TripRow[]; tickets: TicketRow[]; stations: Station[]; routeStops: RouteStop[];
+  allTrips: TripRow[]; tickets: TicketRow[]; stations: Station[]; routeStops: RouteStop[]; saccosMap: Map<string, string>;
   onSelect: (sr: SearchResult) => void; onBack: () => void;
 }) {
   const results = useMemo<SearchResult[]>(() => {
@@ -378,27 +389,30 @@ function ResultsView({ params, allTrips, tickets, stations, routeStops, onSelect
       .map((trip) => {
         const route = trip.routes;
         const vehicle = trip.vehicles;
-        const driver = trip.drivers;
         const capacity = vehicle?.capacity ?? 14;
         const soldCount = tickets.filter((tk) => tk.trip_id === trip.id).length;
         let fare = route?.standard_fare ?? 0;
+        let routePasses = false;
         if (originStation && destStation && route) {
           const stops = routeStops.filter((rs) => rs.route_id === route.id).sort((a, b) => a.sequence_no - b.sequence_no);
           const origIdx = stops.findIndex((s) => s.station_id === originStation.id);
           const destIdx = stops.findIndex((s) => s.station_id === destStation.id);
-          if (origIdx >= 0 && destIdx >= 0 && destIdx > origIdx && stops[origIdx] && stops[destIdx]) {
-            fare = (stops[destIdx]!.segment_fare ?? 0) - (stops[origIdx]!.segment_fare ?? 0);
+          if (origIdx >= 0 && destIdx >= 0 && destIdx > origIdx) {
+            routePasses = true;
+            const origCum = stops[origIdx]?.cumulative_fare ?? 0;
+            const destCum = stops[destIdx]?.cumulative_fare ?? 0;
+            fare = destCum - origCum;
           }
         }
         return {
           trip, departure: timeOf(trip.scheduled_at), arrival: "—",
           availableSeats: capacity - soldCount, vehicleType: `${capacity}-Seater`,
-          plate: vehicle?.plate ?? "—", saccoName: trip.saccos?.name ?? "—",
-          price: fare,
+          plate: vehicle?.plate ?? "—", saccoName: (trip.sacco_id && saccosMap.get(trip.sacco_id)) || "—",
+          price: fare, routePasses,
         };
       })
-      .filter((sr) => sr.price > 0 || sr.availableSeats > 0);
-  }, [allTrips, tickets, stations, routeStops, params]);
+      .filter((sr) => sr.routePasses && sr.price > 0 && sr.availableSeats > 0);
+  }, [allTrips, tickets, stations, routeStops, saccosMap, params]);
 
   const currDate = new Date(params.date);
   const prevDate = new Date(currDate); prevDate.setDate(currDate.getDate() - 1);
