@@ -607,9 +607,6 @@ function CheckoutView({ result, seats, onComplete, onBack }: {
     setStatus("PROCESSING");
 
     try {
-      const mpesaUrl = import.meta.env["VITE_SUPABASE_URL"] as string;
-      const mpesaKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string;
-
       // 1. Create the booking via PostgreSQL function
       const { data: bookingResult, error: bookingError } = await supabase.rpc("api_online_booking" as never, {
         p_trip_id: result.trip.id,
@@ -627,64 +624,67 @@ function CheckoutView({ result, seats, onComplete, onBack }: {
         return;
       }
 
-      // 2. Initiate STK Push
+      // 2. Initiate STK Push via BrightPay (endpoint-pay)
       setStatus("STK_SENT");
       setMsg("Sending payment prompt to your phone...");
 
-      const stkRes = await fetch(`${mpesaUrl}/functions/v1/mpesa_stk_push`, {
+      const externalReference = (bookingResult as Record<string, unknown>)?.receipt_code || `SCL-${Date.now().toString(36).toUpperCase()}`;
+      const bpUrl = import.meta.env["VITE_BRIGHTPAY_BASE_URL"] as string;
+      const bpKey = import.meta.env["VITE_BRIGHTPAY_API_KEY"] as string;
+      const phoneFormatted = phone.trim().replace(/^0/, "254").replace(/[^0-9]/g, "");
+
+      const stkRes = await fetch(`${bpUrl}/functions/v1/endpoint-pay`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${mpesaKey}` },
+        headers: { "Content-Type": "application/json", "x-api-key": bpKey },
         body: JSON.stringify({
-          phone: phone.trim(),
           amount: total,
-          account_reference: (bookingResult as Record<string, unknown>)?.receipt_code || `SCL-${Date.now().toString(36).toUpperCase()}`,
-          ticket_id: (bookingResult as Record<string, unknown>)?.id || null,
-          station_id: result.trip.station_id,
+          phone_number: phoneFormatted,
+          external_reference: externalReference,
         }),
       });
 
-      const stkData = await stkRes.json();
+      const stkData = await stkRes.json().catch(() => ({}));
 
-      if (!stkData.success) {
+      if (!stkRes.ok || !stkData.success) {
         setStatus("FAILED");
-        setMsg(stkData.error || "M-Pesa payment failed. Please try again or pay at the stage.");
+        setMsg(stkData.message || stkData.error || "M-Pesa payment failed. Please try again or pay at the stage.");
         return;
       }
 
+      const checkoutId = stkData.checkout_id;
       setStatus("WAITING");
-      setMsg(stkData.customer_message || "Check your phone for the payment prompt.");
+      setMsg("Check your phone — enter your M-Pesa PIN to complete payment.");
 
-      // 3. Poll for status
+      // 3. Poll status via BrightPay (endpoint-status), every ~3s up to ~2 min
       let attempts = 0;
+      const maxAttempts = 40; // 40 * 3s = 120s
       const poll = setInterval(async () => {
         attempts++;
-        if (attempts > 30) { clearInterval(poll); setStatus("FAILED"); setMsg("Payment timed out. Your seat is reserved for 5 minutes."); return; }
+        if (attempts > maxAttempts) { clearInterval(poll); setStatus("FAILED"); setMsg("Payment timed out. Your seat is reserved for 5 minutes."); return; }
 
         try {
-          const pollRes = await fetch(`${mpesaUrl}/functions/v1/mpesa_stk_status`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${mpesaKey}` },
-            body: JSON.stringify({ transaction_id: stkData.transaction_id }),
+          const pollRes = await fetch(`${bpUrl}/functions/v1/endpoint-status?checkout_id=${encodeURIComponent(checkoutId)}`, {
+            headers: { "x-api-key": bpKey },
           });
-          const pollData = await pollRes.json();
-          const tx = pollData.transaction;
+          const pollData = await pollRes.json().catch(() => ({}));
+          const txStatus = pollData.status;
 
-          if (tx?.status === "success") {
+          if (/COMPLETED|SUCCESS|success/i.test(txStatus)) {
             clearInterval(poll);
             setStatus("SUCCESS");
             setMsg("Payment confirmed!");
             setTimeout(() => onComplete({
-              bookingRef: (bookingResult as Record<string, unknown>)?.receipt_code || "SCL-" + Date.now().toString(36).toUpperCase(),
+              bookingRef: externalReference,
               trip: { origin: result.plate, destination: "—", date: new Date().toLocaleDateString(), departure: result.departure },
               seats, passenger: { name, phone, email }, amount: total,
             }), 1500);
-          } else if (tx?.status === "failed" || tx?.status === "cancelled") {
+          } else if (/FAILED|CANCELLED|cancelled|failed/i.test(txStatus)) {
             clearInterval(poll);
             setStatus("FAILED");
             setMsg("Payment was not completed.");
           }
         } catch { /* ignore poll errors */ }
-      }, 2000);
+      }, 3000);
     } catch (err) {
       setStatus("FAILED");
       setMsg(err instanceof Error ? err.message : "Payment failed");
