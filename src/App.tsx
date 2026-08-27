@@ -10,10 +10,11 @@ interface Station { id: string; name: string; }
 interface RouteRow { id: string; name: string; standard_fare: number; origin_station_id?: string; destination_station_id?: string; }
 interface Vehicle { id: string; plate: string; capacity: number; }
 interface Driver { id: string; full_name: string; }
+interface SaccoRow { id: string; name: string; }
 interface TripRow {
   id: string; scheduled_at: string; status: string; station_id: string;
-  route_id: string; vehicle_id: string; driver_id: string;
-  routes?: RouteRow; vehicles?: Vehicle; drivers?: Driver;
+  route_id: string; vehicle_id: string; driver_id: string; sacco_id?: string | null;
+  routes?: RouteRow; vehicles?: Vehicle; drivers?: Driver; saccos?: SaccoRow;
 }
 interface TicketRow {
   id: string; trip_id: string; seat_no: number; passenger_name: string;
@@ -24,7 +25,7 @@ interface TicketRow {
 interface RouteStop { id: string; route_id: string; station_id: string; sequence_no: number; segment_fare: number; stations?: Station; }
 interface SearchResult {
   trip: TripRow; departure: string; arrival: string; availableSeats: number;
-  vehicleType: string; plate: string; driverName: string; price: number;
+  vehicleType: string; plate: string; saccoName: string; price: number;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -83,7 +84,7 @@ function App() {
     (async () => {
       const sRes = await supabase.from("stations").select("id, name").order("name");
       setStations((sRes.data as Station[]) ?? []);
-      const tRes = await supabase.from("trips").select("*, routes(*), vehicles(*), drivers(*)").gte("scheduled_at", today()).lte("scheduled_at", today() + "T23:59:59").order("scheduled_at");
+      const tRes = await supabase.from("trips").select("*, routes(*), vehicles(*), drivers(*), saccos(id, name)").gte("scheduled_at", today()).lte("scheduled_at", today() + "T23:59:59").order("scheduled_at");
       const tripData = (tRes.data as TripRow[]) ?? [];
       setAllTrips(tripData);
       // Fetch route_stops via direct REST (table not in generated types)
@@ -392,7 +393,7 @@ function ResultsView({ params, allTrips, tickets, stations, routeStops, onSelect
         return {
           trip, departure: timeOf(trip.scheduled_at), arrival: "—",
           availableSeats: capacity - soldCount, vehicleType: `${capacity}-Seater`,
-          plate: vehicle?.plate ?? "—", driverName: driver?.full_name ?? "—",
+          plate: vehicle?.plate ?? "—", saccoName: trip.saccos?.name ?? "—",
           price: fare,
         };
       })
@@ -444,7 +445,7 @@ function ResultsView({ params, allTrips, tickets, stations, routeStops, onSelect
                   <div className="flex-1">
                     <div className="mb-4 flex items-center gap-3">
                       <span className="rounded-md bg-gray-900 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">{sr.vehicleType}</span>
-                      <span className="text-sm font-medium text-gray-500">{sr.plate} · {sr.driverName}</span>
+                      <span className="text-sm font-medium text-gray-500">{sr.saccoName} · {sr.plate}</span>
                     </div>
                     <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-4">
                       <div className="text-left">
