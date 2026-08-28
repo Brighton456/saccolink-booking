@@ -40,7 +40,7 @@ function AppInner() {
       {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
       <div className={`flex min-h-screen flex-col transition-opacity duration-500 ${splashDone ? "opacity-100" : "opacity-0"}`}>
         <TopNav />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col overflow-x-hidden">
           <AppRoutes />
         </main>
         {/* Spacer for bottom nav on mobile */}

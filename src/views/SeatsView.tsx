@@ -34,9 +34,9 @@ function RealSeat({
 }) {
   const haptic = useHaptic();
   const size =
-    variant === "cabin" ? "h-[52px] w-[62px]" :
-    variant === "cabin-mid" ? "h-[52px] w-[56px]" :
-    "h-[52px] flex-1";
+    variant === "cabin" ? "h-[40px] w-[50px]" :
+    variant === "cabin-mid" ? "h-[40px] w-[44px]" :
+    "h-[40px] flex-1";
 
   const styles = {
     available: "border-zinc-300 bg-[#e8eaed] text-[#0a7a42] hover:border-[#8B7D3C] hover:bg-emerald-50",
@@ -50,12 +50,12 @@ function RealSeat({
         if (state === "booked") { haptic("error"); return; }
         haptic("tap"); playClick(); onClick();
       }}
-      className={`relative flex flex-col items-center justify-center rounded-[3px] border-2 font-extrabold text-[13px] select-none transition-all ${size} ${styles[state]}`}
+      className={`relative flex flex-col items-center justify-center rounded-[3px] border-2 font-extrabold text-[11px] select-none transition-all ${size} ${styles[state]}`}
       title={state === "booked" ? `Seat ${label} — Booked` : `Seat ${label}`}
     >
-      <div className={`absolute -top-[1px] h-[6px] w-[70%] rounded-b-[2px] ${state === "selected" ? "bg-amber-300" : state === "booked" ? "bg-zinc-300" : "bg-zinc-300"}`} />
+      <div className={`absolute -top-[1px] h-[5px] w-[60%] rounded-b-[2px] ${state === "selected" ? "bg-amber-300" : state === "booked" ? "bg-zinc-300" : "bg-zinc-300"}`} />
       <span className={state === "selected" ? "text-white" : state === "booked" ? "text-zinc-500" : "text-[#0a7a42]"}>{label}</span>
-      <div className={`absolute bottom-[5px] h-[7px] w-7 rounded-[2px] border ${state === "selected" ? "border-amber-200 bg-white/70" : "border-zinc-400 bg-white/70"}`} />
+      <div className={`absolute bottom-[4px] h-[6px] w-6 rounded-[2px] border ${state === "selected" ? "border-amber-200 bg-white/70" : "border-zinc-400 bg-white/70"}`} />
     </button>
   );
 }
@@ -196,7 +196,7 @@ export default function SeatsView() {
             </div>
           </div>
 
-          <div className="relative w-full max-w-[320px] transition-transform duration-300" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
+          <div className="relative w-full max-w-[260px] transition-transform duration-300" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
             {isRealistic && layout ? (
               <div className="relative rounded-t-[36px] rounded-b-[20px] border-[2px] border-zinc-300 bg-white px-3 pb-5 pt-2 shadow-xl">
                 <div className="absolute -left-[8px] top-[68px] h-7 w-[10px] rounded-l-full border border-zinc-300 bg-white shadow-sm" />

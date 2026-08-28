@@ -8,7 +8,7 @@ import { playClick, playSuccess, playError } from "@/lib/sounds";
 import { initiateSTKPush, pollPaymentStatus, generateReference, formatMpesaPhone } from "@/lib/brightpay";
 import * as I from "@/icons";
 
-type Status = "IDLE" | "PROCESSING" | "BOOKING" | "STK_SENT" | "WAITING" | "SUCCESS" | "FAILED";
+type Status = "IDLE" | "PROCESSING" | "STK_SENT" | "WAITING" | "BOOKING" | "SUCCESS" | "FAILED";
 
 export default function CheckoutView() {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ export default function CheckoutView() {
   const [msg, setMsg] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  /* Cleanup poll interval on unmount */
   useEffect(() => {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, []);
@@ -41,51 +40,16 @@ export default function CheckoutView() {
     if (!valid) return;
     haptic("tap");
     playClick();
-    setStatus("PROCESSING");
-    setMsg("Booking your seats...");
+    setStatus("STK_SENT");
+    setMsg("Sending payment prompt to your phone...");
+
+    const externalReference = generateReference();
+    const phoneFormatted = formatMpesaPhone(phone);
 
     try {
       /* ────────────────────────────────────────────────────────
-         STEP 1: Book ALL selected seats via Supabase
+         STEP 1: Send M-Pesa STK Push via BrightPay FIRST
          ──────────────────────────────────────────────────────── */
-      let lastBookingResult: Record<string, unknown> | null = null;
-
-      for (const seatNo of selectedSeats) {
-        setStatus("BOOKING");
-        setMsg(`Booking seat ${seatNo}...`);
-
-        const { data: bookingResult, error: bookingError } = await supabase.rpc("api_online_booking" as never, {
-          p_trip_id: selectedTrip.trip.id,
-          p_seat_no: seatNo,
-          p_passenger_name: name.trim(),
-          p_boarding_station_id: selectedTrip.trip.station_id,
-          p_destination_station_id: null,
-          p_passenger_phone: phone.trim(),
-          p_payment_method: "mpesa",
-        } as never);
-
-        if (bookingError || !bookingResult) {
-          setStatus("FAILED");
-          setMsg(`Booking failed for seat ${seatNo}: ${bookingError?.message || "Unknown error. Your seat has NOT been reserved."}`);
-          haptic("error");
-          playError();
-          return;
-        }
-        lastBookingResult = bookingResult as Record<string, unknown>;
-      }
-
-      /* ────────────────────────────────────────────────────────
-         STEP 2: Initiate M-Pesa STK Push via BrightPay
-         ──────────────────────────────────────────────────────── */
-      setStatus("STK_SENT");
-      setMsg("Sending payment prompt to your phone...");
-
-      const externalReference =
-        (lastBookingResult as Record<string, unknown>)?.receipt_code as string ||
-        generateReference();
-
-      const phoneFormatted = formatMpesaPhone(phone);
-
       const stkResponse = await initiateSTKPush({
         amount: total,
         phone_number: phoneFormatted,
@@ -109,8 +73,7 @@ export default function CheckoutView() {
       setMsg("Check your phone — enter your M-Pesa PIN to complete payment.");
 
       /* ────────────────────────────────────────────────────────
-         STEP 3: Poll BrightPay for payment status
-         Poll every 3 seconds, max ~2 minutes (40 attempts)
+         STEP 2: Poll BrightPay for payment status
          ──────────────────────────────────────────────────────── */
       let attempts = 0;
       const maxAttempts = 40;
@@ -123,7 +86,7 @@ export default function CheckoutView() {
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setStatus("FAILED");
-          setMsg("Payment timed out. Your seat is reserved for 5 minutes — please try again.");
+          setMsg("Payment timed out. Your seats have NOT been reserved — please try again.");
           haptic("error");
           playError();
           return;
@@ -133,20 +96,53 @@ export default function CheckoutView() {
           const statusData = await pollPaymentStatus(checkoutId);
           const txStatus = statusData.status;
 
-          /* ── Payment completed ── */
           if (txStatus === "COMPLETED") {
             clearInterval(pollRef.current!);
             pollRef.current = null;
-            setStatus("SUCCESS");
-            setMsg("Payment confirmed!");
+            setStatus("BOOKING");
+            setMsg("Payment confirmed! Booking your seats...");
             playSuccess();
             haptic("success");
-            showToast(`Payment successful! M-Pesa receipt: ${statusData.mpesa_receipt || "—"}`, "success");
 
-            setTimeout(() => {
+            /* ────────────────────────────────────────────────────
+               STEP 3: NOW book ALL selected seats via Supabase
+               (only after payment is confirmed)
+               ──────────────────────────────────────────────────── */
+            let lastReceipt = externalReference;
+            let bookingFailed = false;
+
+            for (const seatNo of selectedSeats) {
+              setMsg(`Booking seat ${seatNo}...`);
+              const { data: bookingResult, error: bookingError } = await supabase.rpc("api_online_booking" as never, {
+                p_trip_id: selectedTrip.trip.id,
+                p_seat_no: seatNo,
+                p_passenger_name: name.trim(),
+                p_boarding_station_id: selectedTrip.trip.station_id,
+                p_destination_station_id: null,
+                p_passenger_phone: phone.trim(),
+                p_payment_method: "mpesa",
+              } as never);
+
+              if (bookingError || !bookingResult) {
+                bookingFailed = true;
+                clearInterval(pollRef.current!);
+                pollRef.current = null;
+                setStatus("FAILED");
+                setMsg(`Booking failed for seat ${seatNo}: ${bookingError?.message || "Seat may have been taken."} Please try again.`);
+                haptic("error");
+                playError();
+                return;
+              }
+              lastReceipt = (bookingResult as Record<string, unknown>)?.receipt_code as string || lastReceipt;
+            }
+
+            if (!bookingFailed) {
+              setStatus("SUCCESS");
+              setMsg("Generating your boarding pass...");
+
               completeBooking({
-                bookingRef: externalReference,
-                mpesaReceipt: statusData.mpesa_receipt,
+                bookingRef: lastReceipt,
+                mpesaReceipt: statusData.mpesa_receipt || "—",
                 trip: {
                   origin: selectedTrip.plate,
                   destination: "—",
@@ -157,12 +153,14 @@ export default function CheckoutView() {
                 passenger: { name, phone, email },
                 amount: total,
               });
-              navigate("/ticket");
-            }, 2000);
+
+              setTimeout(() => {
+                navigate("/ticket");
+              }, 2000);
+            }
             return;
           }
 
-          /* ── Payment failed / cancelled ── */
           if (txStatus === "FAILED") {
             clearInterval(pollRef.current!);
             pollRef.current = null;
@@ -173,12 +171,11 @@ export default function CheckoutView() {
             return;
           }
 
-          /* ── Still pending — update sub-message ── */
           if (txStatus === "PENDING") {
             setMsg(`Waiting for payment... (attempt ${attempts}/${maxAttempts})`);
           }
         } catch {
-          /* Poll network error — will retry next interval */
+          /* Poll network error — retry next interval */
         }
       }, pollInterval);
 
@@ -203,44 +200,44 @@ export default function CheckoutView() {
           </button>
 
           {/* Passenger Details */}
-          <div className="rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-6 shadow-[var(--scl-shadow-sm)] md:p-8">
-            <h2 className="mb-6 text-xl font-extrabold text-[var(--scl-text)]">Passenger Details</h2>
-            <div className="space-y-5">
+          <div className="rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)]">
+            <h2 className="mb-5 text-lg font-extrabold text-[var(--scl-text)]">Passenger Details</h2>
+            <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Full Name</label>
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Full Name</label>
                 <input
                   type="text"
                   placeholder="e.g. John Kamau"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={status !== "IDLE"}
-                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
+                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-3 font-medium text-[var(--scl-text)] transition-all placeholder:[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
                 />
               </div>
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">M-Pesa Phone Number</label>
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">M-Pesa Phone Number</label>
                 <div className="flex overflow-hidden rounded-2xl border-2 border-[var(--scl-border)] transition-all focus-within:border-[#8B7D3C] focus-within:ring-4 focus-within:ring-[#8B7D3C]/10">
-                  <span className="inline-flex items-center border-r-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 font-bold text-[var(--scl-text-secondary)]">+254</span>
+                  <span className="inline-flex items-center border-r-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 font-bold text-[var(--scl-text-secondary)]">+254</span>
                   <input
                     type="tel"
                     placeholder="712 345 678"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     disabled={status !== "IDLE"}
-                    className="w-full bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] outline-none focus:bg-[var(--scl-card)] disabled:opacity-50"
+                    className="w-full bg-[var(--scl-surface-alt)] px-4 py-3 font-medium text-[var(--scl-text)] outline-none focus:bg-[var(--scl-card)] disabled:opacity-50"
                   />
                 </div>
-                <p className="mt-1.5 text-[11px] font-medium text-[var(--scl-text-secondary)]">STK Push will be sent to this number.</p>
+                <p className="mt-1 text-[11px] font-medium text-[var(--scl-text-secondary)]">STK Push will be sent to this number.</p>
               </div>
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Email (Optional)</label>
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Email (Optional)</label>
                 <input
                   type="email"
                   placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={status !== "IDLE"}
-                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
+                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-3 font-medium text-[var(--scl-text)] transition-all placeholder:[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
                 />
               </div>
             </div>
@@ -249,18 +246,18 @@ export default function CheckoutView() {
 
         {/* Payment Summary + CTA */}
         <div className="w-full md:w-96 md:space-y-5">
-          <div className="rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-6 shadow-[var(--scl-shadow-sm)] md:p-8">
-            <h3 className="mb-5 text-lg font-extrabold text-[var(--scl-text)]">Payment Summary</h3>
-            <div className="mb-6 rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-4">
+          <div className="rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)]">
+            <h3 className="mb-4 text-lg font-extrabold text-[var(--scl-text)]">Payment Summary</h3>
+            <div className="mb-5 rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-4">
               <div className="flex justify-between text-sm">
                 <span className="font-medium text-[var(--scl-text-secondary)]">Ticket(s)</span>
                 <span className="font-bold text-[var(--scl-text)]">{selectedSeats.length} × {money(selectedTrip.price)}</span>
               </div>
-              <div className="mt-2 flex justify-between text-sm">
+              <div className="mt-1.5 flex justify-between text-sm">
                 <span className="font-medium text-[var(--scl-text-secondary)]">Seat(s)</span>
                 <span className="font-bold text-[var(--scl-text)]">{selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", ")}</span>
               </div>
-              <div className="mt-3 flex justify-between border-t border-[#8B7D3C]/20 pt-3">
+              <div className="mt-2.5 flex justify-between border-t border-[#8B7D3C]/20 pt-2.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Total</span>
                 <span className="text-2xl font-extrabold text-[#8B7D3C]">{money(total)}</span>
               </div>
@@ -268,12 +265,11 @@ export default function CheckoutView() {
 
             {/* ═══════ PAYMENT STATES ═══════ */}
 
-            {/* IDLE — Show pay button */}
             {status === "IDLE" && (
               <button
                 disabled={!valid}
                 onClick={pay}
-                className={`haptic-tap w-full rounded-2xl py-4 text-base font-bold shadow-lg transition-all ${
+                className={`haptic-tap w-full rounded-2xl py-3.5 text-base font-bold shadow-lg transition-all ${
                   valid
                     ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]"
                     : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"
@@ -283,72 +279,62 @@ export default function CheckoutView() {
               </button>
             )}
 
-            {/* PROCESSING / BOOKING — Creating seat reservations */}
-            {(status === "PROCESSING" || status === "BOOKING") && (
-              <div className="animate-pulse rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-8 text-center">
-                <I.Loader className="mx-auto mb-4 h-10 w-10 animate-spin text-[#8B7D3C]" />
-                <p className="text-lg font-extrabold text-[#8B7D3C]">Booking seats...</p>
-                <p className="mt-2 text-sm font-medium text-[#8B7D3C]/80">{msg}</p>
-              </div>
-            )}
-
-            {/* STK_SENT — Payment prompt sent to phone */}
-            {status === "STK_SENT" && (
-              <div className="animate-pulse rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900/30 dark:bg-amber-950/30">
-                <I.Phone className="mx-auto mb-4 h-10 w-10 animate-pulse text-amber-500" />
+            {(status === "STK_SENT") && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900/30 dark:bg-amber-950/30">
+                <I.Phone className="mx-auto mb-3 h-9 w-9 animate-pulse text-amber-500" />
                 <p className="text-lg font-extrabold text-amber-700 dark:text-amber-400">Check your phone</p>
-                <p className="mt-2 text-sm font-medium text-amber-600/80 dark:text-amber-400/80">{msg}</p>
+                <p className="mt-1.5 text-sm font-medium text-amber-600/80 dark:text-amber-400/80">{msg}</p>
               </div>
             )}
 
-            {/* WAITING — Polling for payment confirmation */}
             {status === "WAITING" && (
-              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-8 text-center dark:border-blue-900/30 dark:bg-blue-950/30">
-                <I.Loader className="mx-auto mb-4 h-10 w-10 animate-spin text-blue-500" />
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-center dark:border-blue-900/30 dark:bg-blue-950/30">
+                <I.Loader className="mx-auto mb-3 h-9 w-9 animate-spin text-blue-500" />
                 <p className="text-lg font-extrabold text-blue-700 dark:text-blue-400">Waiting for payment</p>
-                <p className="mt-2 text-sm font-medium text-blue-600/80 dark:text-blue-400/80">{msg}</p>
-                <div className="mt-4 flex justify-center gap-1">
+                <p className="mt-1.5 text-sm font-medium text-blue-600/80 dark:text-blue-400/80">{msg}</p>
+                <div className="mt-3 flex justify-center gap-1">
                   {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="h-2 w-2 rounded-full bg-blue-400"
-                      style={{ animation: "pulseSoft 1.2s ease-in-out infinite", animationDelay: `${i * 0.3}s` }}
-                    />
+                    <div key={i} className="h-2 w-2 rounded-full bg-blue-400" style={{ animation: "pulseSoft 1.2s ease-in-out infinite", animationDelay: `${i * 0.3}s` }} />
                   ))}
                 </div>
               </div>
             )}
 
-            {/* SUCCESS — Payment confirmed */}
-            {status === "SUCCESS" && (
-              <div className="animate-scale-in rounded-2xl border border-[#8B7D3C]/30 bg-[#8B7D3C]/10 p-8 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#8B7D3C] text-white shadow-lg shadow-[#8B7D3C]/30 animate-bounce-in">
-                  <I.Check className="h-8 w-8" />
-                </div>
-                <p className="text-xl font-extrabold text-[#8B7D3C]">Payment Successful!</p>
-                <p className="mt-2 text-sm font-medium text-[#8B7D3C]/80">Generating your boarding pass...</p>
+            {status === "BOOKING" && (
+              <div className="animate-pulse rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-6 text-center">
+                <I.Loader className="mx-auto mb-3 h-9 w-9 animate-spin text-[#8B7D3C]" />
+                <p className="text-lg font-extrabold text-[#8B7D3C]">Payment confirmed! Booking seats...</p>
+                <p className="mt-1.5 text-sm font-medium text-[#8B7D3C]/80">{msg}</p>
               </div>
             )}
 
-            {/* FAILED — Something went wrong */}
+            {status === "SUCCESS" && (
+              <div className="animate-scale-in rounded-2xl border border-[#8B7D3C]/30 bg-[#8B7D3C]/10 p-6 text-center">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#8B7D3C] text-white shadow-lg shadow-[#8B7D3C]/30">
+                  <I.Check className="h-7 w-7" />
+                </div>
+                <p className="text-lg font-extrabold text-[#8B7D3C]">Payment Successful!</p>
+                <p className="mt-1.5 text-sm font-medium text-[#8B7D3C]/80">Generating your boarding pass...</p>
+              </div>
+            )}
+
             {status === "FAILED" && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/30 dark:bg-red-950/30">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                  <I.X className="h-6 w-6 text-red-500" />
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-900/30 dark:bg-red-950/30">
+                <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                  <I.X className="h-5 w-5 text-red-500" />
                 </div>
                 <p className="text-lg font-bold text-red-600 dark:text-red-400">Payment Failed</p>
-                <p className="mt-2 text-sm leading-relaxed text-red-500/80 dark:text-red-400/80">{msg}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-red-500/80 dark:text-red-400/80">{msg}</p>
                 <button
                   onClick={resetToIdle}
-                  className="haptic-tap mt-4 rounded-xl bg-red-500 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-red-600 active:scale-[0.97]"
+                  className="haptic-tap mt-3 rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-600 active:scale-[0.97]"
                 >
                   Try Again
                 </button>
               </div>
             )}
 
-            {/* Trust badge */}
-            <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">
               <I.Shield className="h-3.5 w-3.5" /> Secure M-Pesa Payment via BrightPay
             </div>
           </div>
