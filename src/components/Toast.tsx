@@ -9,7 +9,7 @@ const icons: Record<Notification["type"], React.ReactNode> = {
 };
 
 const colors: Record<Notification["type"], string> = {
-  success: "bg-[#16a34a]",
+  success: "bg-[#8B7D3C]",
   error: "bg-red-500",
   warning: "bg-amber-500",
   info: "bg-gray-800",

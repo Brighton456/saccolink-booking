@@ -10,9 +10,9 @@ import type { SearchResult } from "@/types";
 
 function NextDeparture({ scheduledAt }: { scheduledAt: string }) {
   const { hours, minutes, expired } = useCountdown(scheduledAt);
-  if (expired) return <span className="text-xs font-bold text-[#16a34a]">Departing now</span>;
+  if (expired) return <span className="text-xs font-bold text-[#8B7D3C]">Departing now</span>;
   return (
-    <span className="text-xs font-bold text-[#16a34a]">
+    <span className="text-xs font-bold text-[#8B7D3C]">
       In {hours > 0 ? `${hours}h ` : ""}{minutes}m
     </span>
   );
@@ -103,7 +103,7 @@ export default function ResultsView() {
                 <h2 className="text-lg font-extrabold text-[var(--scl-text)] md:text-xl">
                   {searchParams.origin}
                 </h2>
-                <I.ArrowRight className="h-4 w-4 text-[#16a34a]" />
+                <I.ArrowRight className="h-4 w-4 text-[#8B7D3C]" />
                 <h2 className="text-lg font-extrabold text-[var(--scl-text)] md:text-xl">
                   {searchParams.destination}
                 </h2>
@@ -112,10 +112,10 @@ export default function ResultsView() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={toggleFav} className="haptic-tap flex h-10 w-10 items-center justify-center rounded-full bg-[var(--scl-surface-alt)] text-[#16a34a] transition hover:bg-[#16a34a]/10">
+            <button onClick={toggleFav} className="haptic-tap flex h-10 w-10 items-center justify-center rounded-full bg-[var(--scl-surface-alt)] text-[#8B7D3C] transition hover:bg-[#8B7D3C]/10">
               <I.Ticket className="h-5 w-5" />
             </button>
-            <button onClick={() => navigate("/")} className="rounded-xl bg-[#16a34a]/10 px-4 py-2 text-xs font-bold text-[#16a34a] transition hover:bg-[#16a34a]/20">
+            <button onClick={() => navigate("/")} className="rounded-xl bg-[#8B7D3C]/10 px-4 py-2 text-xs font-bold text-[#8B7D3C] transition hover:bg-[#8B7D3C]/20">
               Modify
             </button>
           </div>
@@ -133,7 +133,7 @@ export default function ResultsView() {
               onClick={() => handleDateChange(d.date)}
               className={`flex-1 whitespace-nowrap px-4 py-3.5 text-center text-sm transition-all ${
                 d.active
-                  ? "border-b-[3px] border-[#16a34a] bg-[#16a34a]/5 font-bold text-[#16a34a]"
+                  ? "border-b-[3px] border-[#8B7D3C] bg-[#8B7D3C]/5 font-bold text-[#8B7D3C]"
                   : "font-medium text-[var(--scl-text-secondary)] hover:bg-[var(--scl-surface-alt)]"
               }`}
             >
@@ -152,7 +152,7 @@ export default function ResultsView() {
             </div>
             <p className="mb-2 text-lg font-bold text-[var(--scl-text)]">No trips found</p>
             <p className="text-sm text-[var(--scl-text-secondary)]">No departures for this route on this date.</p>
-            <button onClick={() => navigate("/")} className="mt-6 font-bold text-[#16a34a]">Change search</button>
+            <button onClick={() => navigate("/")} className="mt-6 font-bold text-[#8B7D3C]">Change search</button>
           </div>
         ) : (
           <>
@@ -161,19 +161,19 @@ export default function ResultsView() {
                 {results.length} trip{results.length !== 1 ? "s" : ""} available
               </p>
               <div className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse-soft" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#16a34a]">Live</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#B8A94E] animate-pulse-soft" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B7D3C]">Live</span>
               </div>
             </div>
             <div className="space-y-4">
               {results.map((sr, i) => (
                 <div
                   key={sr.trip.id}
-                  className="haptic-tap group relative overflow-hidden rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)] transition-all duration-300 hover:border-[#16a34a]/20 hover:shadow-md md:flex md:flex-row md:justify-between md:gap-6"
+                  className="haptic-tap group relative overflow-hidden rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)] transition-all duration-300 hover:border-[#8B7D3C]/20 hover:shadow-md md:flex md:flex-row md:justify-between md:gap-6"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   {/* Left accent */}
-                  <div className="absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-[#22c55e] to-[#16a34a] opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-[#B8A94E] to-[#8B7D3C] opacity-0 transition-opacity group-hover:opacity-100" />
 
                   <div className="flex-1">
                     <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -192,7 +192,7 @@ export default function ResultsView() {
                       </div>
                       <div className="flex flex-col items-center px-2">
                         <div className="relative flex w-full items-center justify-center border-t-2 border-dashed border-[var(--scl-border)]">
-                          <div className="absolute rounded-full bg-[var(--scl-card)] px-2 text-[#16a34a]"><I.Bus className="h-5 w-5" /></div>
+                          <div className="absolute rounded-full bg-[var(--scl-card)] px-2 text-[#8B7D3C]"><I.Bus className="h-5 w-5" /></div>
                         </div>
                       </div>
                       <div className="text-right">
@@ -205,8 +205,8 @@ export default function ResultsView() {
                   <div className="flex flex-row items-center justify-between gap-4 border-t border-[var(--scl-border)] pt-4 md:border-l md:border-t-0 md:pl-6 md:pt-0">
                     <div className="text-left md:text-right">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Fare</p>
-                      <p className="text-2xl font-extrabold text-[#16a34a]">{money(sr.price)}</p>
-                      <p className={`mt-1 text-[11px] font-bold ${sr.availableSeats <= 4 ? "rounded-lg bg-red-50 px-2 py-0.5 text-red-500 dark:bg-red-950/50 dark:text-red-400" : "text-[#16a34a]"}`}>
+                      <p className="text-2xl font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
+                      <p className={`mt-1 text-[11px] font-bold ${sr.availableSeats <= 4 ? "rounded-lg bg-red-50 px-2 py-0.5 text-red-500 dark:bg-red-950/50 dark:text-red-400" : "text-[#8B7D3C]"}`}>
                         {sr.availableSeats} seats left
                       </p>
                     </div>

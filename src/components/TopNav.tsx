@@ -21,17 +21,15 @@ export default function TopNav() {
           className="flex cursor-pointer items-center gap-2.5"
           onClick={() => { if (isHome) window.scrollTo({ top: 0, behavior: "smooth" }); }}
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] text-lg font-extrabold text-white shadow-md shadow-[#16a34a]/20">
-            S
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-[var(--scl-text)]">
-            Sacco<span className="text-[#16a34a]">Link</span>
+          <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-10 w-auto" />
+          <span className="text-lg font-extrabold tracking-tight text-[var(--scl-text)]">
+            Kangaroo <span className="text-[#8B7D3C]">Shuttle</span>
           </span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 md:flex">
-          <Link to="/" className={`text-sm font-semibold transition ${isHome ? "text-[#16a34a]" : "text-[var(--scl-text-secondary)] hover:text-[var(--scl-text)]"}`}>
+          <Link to="/" className={`text-sm font-semibold transition ${isHome ? "text-[#8B7D3C]" : "text-[var(--scl-text-secondary)] hover:text-[var(--scl-text)]"}`}>
             Trips
           </Link>
           <button className="text-sm font-medium text-[var(--scl-text-secondary)] transition hover:text-[var(--scl-text)]">Parcels</button>
@@ -70,7 +68,7 @@ export default function TopNav() {
               <button
                 key={label}
                 onClick={() => { setMenuOpen(false); action(); }}
-                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-[var(--scl-text)] transition hover:bg-[#16a34a]/5 hover:text-[#16a34a]"
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-[var(--scl-text)] transition hover:bg-[#8B7D3C]/5 hover:text-[#8B7D3C]"
               >
                 {label}
               </button>

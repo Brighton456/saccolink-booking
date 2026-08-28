@@ -11,7 +11,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
   }, [onComplete]);
 
   return (
-    <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-br from-[#16a34a] via-[#15803d] to-[#0f5132] transition-opacity duration-500 ${phase === "exit" ? "opacity-0" : "opacity-100"}`}>
+    <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a0a] via-[#2d2a14] to-[#1a1a0a] transition-opacity duration-500 ${phase === "exit" ? "opacity-0" : "opacity-100"}`}>
       {/* Decorative rings */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 animate-pulse-soft" />
@@ -21,15 +21,13 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
 
       {/* Logo */}
       <div className={`relative z-10 mb-6 transition-all duration-700 ${phase === "logo" ? "scale-100 opacity-100" : "scale-110 opacity-100"}`}>
-        <div className="flex h-24 w-24 items-center justify-center rounded-[2rem] bg-white shadow-2xl" style={{ animation: "splashPulse 2s ease-in-out infinite" }}>
-          <span className="text-5xl font-extrabold text-[#16a34a]">S</span>
-        </div>
+        <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-28 w-auto drop-shadow-2xl" style={{ animation: "splashPulse 2s ease-in-out infinite" }} />
       </div>
 
       {/* Text */}
       <div className={`relative z-10 text-center transition-all duration-500 ${phase === "logo" ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"}`}>
         <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">
-          Sacco<span className="text-[#86efac]">Link</span>
+          Kangaroo <span className="text-[#B8A94E]">Shuttle</span>
         </h1>
         <p className="text-sm font-medium tracking-widest text-white/60 uppercase">Book. Ride. Arrive.</p>
       </div>

@@ -198,7 +198,7 @@ export default function CheckoutView() {
     <div className="min-h-screen animate-fade-in bg-[var(--scl-surface-alt)] px-4 py-6 pb-24">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <div className="flex-1 space-y-5">
-          <button onClick={() => navigate("/select-seats")} className="haptic-tap flex items-center gap-2 text-sm font-bold text-[var(--scl-text-secondary)] hover:text-[#16a34a]">
+          <button onClick={() => navigate("/select-seats")} className="haptic-tap flex items-center gap-2 text-sm font-bold text-[var(--scl-text-secondary)] hover:text-[#8B7D3C]">
             <I.ArrowLeft className="h-4 w-4" /> Back to seats
           </button>
 
@@ -214,12 +214,12 @@ export default function CheckoutView() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={status !== "IDLE"}
-                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#16a34a] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#16a34a]/10 disabled:opacity-50"
+                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
                 />
               </div>
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">M-Pesa Phone Number</label>
-                <div className="flex overflow-hidden rounded-2xl border-2 border-[var(--scl-border)] transition-all focus-within:border-[#16a34a] focus-within:ring-4 focus-within:ring-[#16a34a]/10">
+                <div className="flex overflow-hidden rounded-2xl border-2 border-[var(--scl-border)] transition-all focus-within:border-[#8B7D3C] focus-within:ring-4 focus-within:ring-[#8B7D3C]/10">
                   <span className="inline-flex items-center border-r-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 font-bold text-[var(--scl-text-secondary)]">+254</span>
                   <input
                     type="tel"
@@ -240,7 +240,7 @@ export default function CheckoutView() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={status !== "IDLE"}
-                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#16a34a] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#16a34a]/10 disabled:opacity-50"
+                  className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-5 py-3.5 font-medium text-[var(--scl-text)] transition-all placeholder-[var(--scl-text-secondary)]/50 focus:border-[#8B7D3C] focus:bg-[var(--scl-card)] focus:outline-none focus:ring-4 focus:ring-[#8B7D3C]/10 disabled:opacity-50"
                 />
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function CheckoutView() {
         <div className="w-full md:w-96 md:space-y-5">
           <div className="rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-6 shadow-[var(--scl-shadow-sm)] md:p-8">
             <h3 className="mb-5 text-lg font-extrabold text-[var(--scl-text)]">Payment Summary</h3>
-            <div className="mb-6 rounded-2xl border border-[#16a34a]/20 bg-[#16a34a]/5 p-4">
+            <div className="mb-6 rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-4">
               <div className="flex justify-between text-sm">
                 <span className="font-medium text-[var(--scl-text-secondary)]">Ticket(s)</span>
                 <span className="font-bold text-[var(--scl-text)]">{selectedSeats.length} × {money(selectedTrip.price)}</span>
@@ -260,9 +260,9 @@ export default function CheckoutView() {
                 <span className="font-medium text-[var(--scl-text-secondary)]">Seat(s)</span>
                 <span className="font-bold text-[var(--scl-text)]">{selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", ")}</span>
               </div>
-              <div className="mt-3 flex justify-between border-t border-[#16a34a]/20 pt-3">
+              <div className="mt-3 flex justify-between border-t border-[#8B7D3C]/20 pt-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Total</span>
-                <span className="text-2xl font-extrabold text-[#16a34a]">{money(total)}</span>
+                <span className="text-2xl font-extrabold text-[#8B7D3C]">{money(total)}</span>
               </div>
             </div>
 
@@ -275,7 +275,7 @@ export default function CheckoutView() {
                 onClick={pay}
                 className={`haptic-tap w-full rounded-2xl py-4 text-base font-bold shadow-lg transition-all ${
                   valid
-                    ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white shadow-[#16a34a]/25 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]"
+                    ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]"
                     : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"
                 }`}
               >
@@ -285,10 +285,10 @@ export default function CheckoutView() {
 
             {/* PROCESSING / BOOKING — Creating seat reservations */}
             {(status === "PROCESSING" || status === "BOOKING") && (
-              <div className="animate-pulse rounded-2xl border border-[#16a34a]/20 bg-[#16a34a]/5 p-8 text-center">
-                <I.Loader className="mx-auto mb-4 h-10 w-10 animate-spin text-[#16a34a]" />
-                <p className="text-lg font-extrabold text-[#16a34a]">Booking seats...</p>
-                <p className="mt-2 text-sm font-medium text-[#16a34a]/80">{msg}</p>
+              <div className="animate-pulse rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 p-8 text-center">
+                <I.Loader className="mx-auto mb-4 h-10 w-10 animate-spin text-[#8B7D3C]" />
+                <p className="text-lg font-extrabold text-[#8B7D3C]">Booking seats...</p>
+                <p className="mt-2 text-sm font-medium text-[#8B7D3C]/80">{msg}</p>
               </div>
             )}
 
@@ -321,12 +321,12 @@ export default function CheckoutView() {
 
             {/* SUCCESS — Payment confirmed */}
             {status === "SUCCESS" && (
-              <div className="animate-scale-in rounded-2xl border border-[#16a34a]/30 bg-[#16a34a]/10 p-8 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#16a34a] text-white shadow-lg shadow-[#16a34a]/30 animate-bounce-in">
+              <div className="animate-scale-in rounded-2xl border border-[#8B7D3C]/30 bg-[#8B7D3C]/10 p-8 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#8B7D3C] text-white shadow-lg shadow-[#8B7D3C]/30 animate-bounce-in">
                   <I.Check className="h-8 w-8" />
                 </div>
-                <p className="text-xl font-extrabold text-[#16a34a]">Payment Successful!</p>
-                <p className="mt-2 text-sm font-medium text-[#16a34a]/80">Generating your boarding pass...</p>
+                <p className="text-xl font-extrabold text-[#8B7D3C]">Payment Successful!</p>
+                <p className="mt-2 text-sm font-medium text-[#8B7D3C]/80">Generating your boarding pass...</p>
               </div>
             )}
 

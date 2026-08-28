@@ -108,7 +108,7 @@ export default function AllTripsView() {
               <select
                 value={routeFilter}
                 onChange={(e) => { setRouteFilter(e.target.value); haptic("tap"); }}
-                className="w-full rounded-xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-2.5 text-sm font-semibold text-[var(--scl-text)] outline-none focus:border-[#16a34a]"
+                className="w-full rounded-xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-2.5 text-sm font-semibold text-[var(--scl-text)] outline-none focus:border-[#8B7D3C]"
               >
                 <option value="all">All Routes</option>
                 {allRouteNames.map(([name, id]) => (
@@ -117,7 +117,7 @@ export default function AllTripsView() {
               </select>
             </div>
             <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-2.5">
-              <I.Calendar className="h-4 w-4 text-[#16a34a]" />
+              <I.Calendar className="h-4 w-4 text-[#8B7D3C]" />
               <input
                 type="date"
                 value={dateFilter}
@@ -145,16 +145,16 @@ export default function AllTripsView() {
             {results.map((sr, i) => (
               <div
                 key={sr.trip.id}
-                className="haptic-tap group relative overflow-hidden rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)] transition-all duration-300 hover:border-[#16a34a]/20 hover:shadow-md"
+                className="haptic-tap group relative overflow-hidden rounded-[var(--scl-radius-xl)] border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-[var(--scl-shadow-sm)] transition-all duration-300 hover:border-[#8B7D3C]/20 hover:shadow-md"
                 style={{ animationDelay: `${i * 40}ms` }}
                 onClick={() => handleSelect(sr)}
               >
                 {/* Route badge */}
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="rounded-lg bg-[#16a34a]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#16a34a]">
+                  <span className="rounded-lg bg-[#8B7D3C]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#8B7D3C]">
                     {sr.routePasses ? sr.vehicleType : ""}
                   </span>
-                  <span className={`text-[11px] font-bold ${sr.availableSeats <= 4 ? "text-red-500" : "text-[#16a34a]"}`}>
+                  <span className={`text-[11px] font-bold ${sr.availableSeats <= 4 ? "text-red-500" : "text-[#8B7D3C]"}`}>
                     {sr.availableSeats} seats
                   </span>
                 </div>
@@ -167,7 +167,7 @@ export default function AllTripsView() {
                   </div>
                   <div className="flex flex-1 items-center justify-center">
                     <div className="h-px flex-1 bg-[var(--scl-border)]" />
-                    <div className="mx-2 rounded-full bg-[#16a34a]/10 p-1.5 text-[#16a34a]">
+                    <div className="mx-2 rounded-full bg-[#8B7D3C]/10 p-1.5 text-[#8B7D3C]">
                       <I.Bus className="h-4 w-4" />
                     </div>
                     <div className="h-px flex-1 bg-[var(--scl-border)]" />
@@ -184,7 +184,7 @@ export default function AllTripsView() {
                     <p className="text-xs text-[var(--scl-text-secondary)]">{sr.saccoName} · {sr.plate}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-extrabold text-[#16a34a]">{money(sr.price)}</p>
+                    <p className="text-lg font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
                   </div>
                 </div>
               </div>

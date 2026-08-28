@@ -46,18 +46,18 @@ export default function BottomNav() {
             >
               {/* Material Design 3 active indicator pill */}
               {active && (
-                <div className="absolute inset-x-1 top-1 h-8 rounded-full bg-[#16a34a]/12 transition-all duration-300" />
+                <div className="absolute inset-x-1 top-1 h-8 rounded-full bg-[#8B7D3C]/12 transition-all duration-300" />
               )}
-              <div className={`relative z-10 transition-all duration-200 ${active ? "text-[#16a34a] scale-110" : "text-[var(--scl-text-secondary)]"}`}>
+              <div className={`relative z-10 transition-all duration-200 ${active ? "text-[#8B7D3C] scale-110" : "text-[var(--scl-text-secondary)]"}`}>
                 <Icon className="h-6 w-6" strokeWidth={active ? 2.5 : 1.8} />
               </div>
               <span className={`relative z-10 text-[10px] font-semibold tracking-wide transition-all duration-200 ${
-                active ? "text-[#16a34a]" : "text-[var(--scl-text-secondary)]"
+                active ? "text-[#8B7D3C]" : "text-[var(--scl-text-secondary)]"
               }`}>
                 {label}
               </span>
               {label === "Ticket" && history.length > 0 && !active && (
-                <span className="absolute right-2 top-1.5 h-2 w-2 rounded-full bg-[#16a34a]" />
+                <span className="absolute right-2 top-1.5 h-2 w-2 rounded-full bg-[#8B7D3C]" />
               )}
             </button>
           );

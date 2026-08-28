@@ -7,8 +7,8 @@ export default function Footer() {
         <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-4">
           <div>
             <div className="mb-5 flex items-center">
-              <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[#16a34a] text-lg font-bold shadow">S</div>
-              <span className="text-2xl font-extrabold tracking-tight">SaccoLink</span>
+              <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="mr-2 h-10 w-auto" />
+              <span className="text-2xl font-extrabold tracking-tight">Kangaroo <span className="text-[#B8A94E]">Shuttle</span></span>
             </div>
             <p className="mb-4 text-sm leading-relaxed text-gray-400">
               Reliable, safe, and comfortable transport across Kenya. Book your seat or send parcels online — no queues, no hassle.
@@ -24,13 +24,13 @@ export default function Footer() {
           <div>
             <h4 className="mb-5 text-lg font-bold">Services</h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li className="flex items-center gap-2 transition hover:text-[#22c55e]">
+              <li className="flex items-center gap-2 transition hover:text-[#B8A94E]">
                 <I.Bus className="h-4 w-4" /> Book a Trip
               </li>
-              <li className="flex items-center gap-2 transition hover:text-[#22c55e]">
+              <li className="flex items-center gap-2 transition hover:text-[#B8A94E]">
                 <I.Package className="h-4 w-4" /> Send a Parcel
               </li>
-              <li className="flex items-center gap-2 transition hover:text-[#22c55e]">
+              <li className="flex items-center gap-2 transition hover:text-[#B8A94E]">
                 <I.MapPin className="h-4 w-4" /> Track Your Route
               </li>
             </ul>
@@ -39,10 +39,10 @@ export default function Footer() {
           <div>
             <h4 className="mb-5 text-lg font-bold">Support</h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li className="cursor-pointer transition hover:text-[#22c55e]">Help Center</li>
-              <li className="cursor-pointer transition hover:text-[#22c55e]">Terms of Service</li>
-              <li className="cursor-pointer transition hover:text-[#22c55e]">Privacy Policy</li>
-              <li className="cursor-pointer transition hover:text-[#22c55e]">Refund Policy</li>
+              <li className="cursor-pointer transition hover:text-[#B8A94E]">Help Center</li>
+              <li className="cursor-pointer transition hover:text-[#B8A94E]">Terms of Service</li>
+              <li className="cursor-pointer transition hover:text-[#B8A94E]">Privacy Policy</li>
+              <li className="cursor-pointer transition hover:text-[#B8A94E]">Refund Policy</li>
             </ul>
           </div>
 
@@ -50,14 +50,14 @@ export default function Footer() {
             <h4 className="mb-5 text-lg font-bold">Contact Us</h4>
             <ul className="mb-6 space-y-3 text-sm text-gray-400">
               <li className="flex items-center gap-3">
-                <div className="rounded-lg bg-[#16a34a]/20 p-2 text-[#22c55e]"><I.Phone className="h-5 w-5" /></div>
+                <div className="rounded-lg bg-[#8B7D3C]/20 p-2 text-[#B8A94E]"><I.Phone className="h-5 w-5" /></div>
                 <div>
                   <p className="font-bold text-white">0720 363 215</p>
                   <p className="text-xs text-gray-500">Call / WhatsApp</p>
                 </div>
               </li>
               <li className="flex items-center gap-3">
-                <div className="rounded-lg bg-gray-800 p-2 text-[#22c55e]"><I.Headphones className="h-5 w-5" /></div>
+                <div className="rounded-lg bg-gray-800 p-2 text-[#B8A94E]"><I.Headphones className="h-5 w-5" /></div>
                 support@saccolink.co.ke
               </li>
             </ul>
@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between border-t border-gray-800 pt-8 text-sm text-gray-500 md:flex-row">
-          <p>&copy; {new Date().getFullYear()} SaccoLink. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kangaroo Shuttle. All rights reserved.</p>
           <p className="mt-2 font-medium md:mt-0">Powered by BrightPay M-Pesa</p>
         </div>
       </div>

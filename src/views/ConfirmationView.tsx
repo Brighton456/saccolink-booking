@@ -16,7 +16,7 @@ export default function ConfirmationView() {
         <div className="text-center">
           <I.Bus className="mx-auto mb-4 h-12 w-12 text-[var(--scl-text-secondary)]" />
           <p className="mb-4 text-lg font-bold text-[var(--scl-text)]">No booking found</p>
-          <button onClick={() => navigate("/")} className="rounded-2xl bg-[#16a34a] px-6 py-3 font-bold text-white">
+          <button onClick={() => navigate("/")} className="rounded-2xl bg-[#8B7D3C] px-6 py-3 font-bold text-white">
             Go Home
           </button>
         </div>
@@ -40,7 +40,7 @@ export default function ConfirmationView() {
   return (
     <div className="min-h-screen animate-fade-in bg-[var(--scl-surface-alt)] pb-32">
       {/* Success banner */}
-      <div className="bg-gradient-to-br from-[#16a34a] to-[#22c55e] px-4 pt-20 pb-12 text-center text-white">
+      <div className="bg-gradient-to-br from-[#8B7D3C] to-[#B8A94E] px-4 pt-20 pb-12 text-center text-white">
         <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur">
           <I.Check className="h-10 w-10" />
         </div>
@@ -54,7 +54,7 @@ export default function ConfirmationView() {
           {/* Header */}
           <div className="border-b border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-6 py-4 text-center">
             <div className="mb-2 flex items-center justify-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#16a34a] text-xs font-bold text-white">S</div>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8B7D3C] text-xs font-bold text-white">S</div>
               <span className="text-sm font-extrabold">SaccoLink</span>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Digital Boarding Ticket</p>
@@ -68,7 +68,7 @@ export default function ConfirmationView() {
                 <p className="text-xs font-semibold text-[var(--scl-text-secondary)]">{selectedTrip.trip.routes?.origin ?? "—"}</p>
               </div>
               <div className="flex flex-col items-center px-4">
-                <I.ArrowRight className="h-5 w-5 text-[#16a34a]" />
+                <I.ArrowRight className="h-5 w-5 text-[#8B7D3C]" />
                 <p className="mt-1 text-[10px] text-[var(--scl-text-secondary)]">{selectedTrip.plate}</p>
               </div>
               <div className="text-center">
@@ -114,7 +114,7 @@ export default function ConfirmationView() {
             {/* Total */}
             <div className="flex items-center justify-between border-t border-[var(--scl-border)] pt-4">
               <span className="text-sm font-bold text-[var(--scl-text-secondary)]">Total Paid</span>
-              <span className="text-2xl font-extrabold text-[#16a34a]">{money(selectedTrip.price * selectedSeats.length)}</span>
+              <span className="text-2xl font-extrabold text-[#8B7D3C]">{money(selectedTrip.price * selectedSeats.length)}</span>
             </div>
           </div>
 
@@ -142,13 +142,13 @@ export default function ConfirmationView() {
         <div className="mt-6 space-y-3">
           <button
             onClick={() => { haptic("tap"); playClick(); }}
-            className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#16a34a]/30"
+            className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
           >
             📥 Save Ticket
           </button>
           <button
             onClick={handleDone}
-            className="w-full rounded-2xl bg-gradient-to-r from-[#22c55e] to-[#16a34a] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#16a34a]/25 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+            className="w-full rounded-2xl bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#8B7D3C]/25 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
           >
             Done — Back to Home
           </button>
@@ -157,7 +157,7 @@ export default function ConfirmationView() {
         {/* Support */}
         <div className="mt-6 rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 text-center">
           <p className="text-xs text-[var(--scl-text-secondary)]">Need help?</p>
-          <p className="mt-1 text-sm font-bold text-[#16a34a]">📞 0720 363 215</p>
+          <p className="mt-1 text-sm font-bold text-[#8B7D3C]">📞 0720 363 215</p>
         </div>
       </div>
     </div>

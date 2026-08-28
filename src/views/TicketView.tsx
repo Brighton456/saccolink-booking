@@ -66,8 +66,8 @@ function TicketCountdown({ departureTime }: { departureTime: string }) {
   if (expired) return null;
 
   return (
-    <div className="mt-4 flex items-center justify-center gap-3 rounded-2xl bg-[#16a34a]/5 px-4 py-3">
-      <I.Calendar className="h-4 w-4 text-[#16a34a]" />
+    <div className="mt-4 flex items-center justify-center gap-3 rounded-2xl bg-[#8B7D3C]/5 px-4 py-3">
+      <I.Calendar className="h-4 w-4 text-[#8B7D3C]" />
       <span className="text-xs font-semibold text-[var(--scl-text-secondary)]">Departs in</span>
       <div className="flex gap-1">
         {[
@@ -75,7 +75,7 @@ function TicketCountdown({ departureTime }: { departureTime: string }) {
           { v: minutes, l: "M" },
           { v: seconds, l: "S" },
         ].map(({ v, l }) => (
-          <span key={l} className="rounded-lg bg-[#16a34a] px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
+          <span key={l} className="rounded-lg bg-[#8B7D3C] px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
             {String(v).padStart(2, "0")}{l}
           </span>
         ))}
@@ -136,10 +136,10 @@ export default function TicketView() {
 
           {/* Header */}
           <div className="relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] p-8 text-center text-white">
-            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#16a34a]/10 blur-2xl" />
-            <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[#22c55e]/10 blur-xl" />
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#8B7D3C]/10 blur-2xl" />
+            <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[#B8A94E]/10 blur-xl" />
             <h2 className="relative z-10 text-3xl font-extrabold">
-              Sacco<span className="text-[#22c55e]">Link</span>
+              Sacco<span className="text-[#B8A94E]">Link</span>
             </h2>
             <p className="relative z-10 mt-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/50">Boarding Pass</p>
           </div>
@@ -151,7 +151,7 @@ export default function TicketView() {
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">From</p>
                 <p className="text-xl font-extrabold text-[var(--scl-text)]">{trip?.origin || "—"}</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#16a34a]/10 text-[#16a34a]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#8B7D3C]/10 text-[#8B7D3C]">
                 <I.ArrowRight className="h-5 w-5" />
               </div>
               <div className="text-right">
@@ -174,7 +174,7 @@ export default function TicketView() {
               </div>
               <div className="text-right">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Time</p>
-                <p className="text-sm font-extrabold text-[#16a34a]">{trip?.departure}</p>
+                <p className="text-sm font-extrabold text-[#8B7D3C]">{trip?.departure}</p>
               </div>
             </div>
             {trip?.departure && <TicketCountdown departureTime={trip.departure} />}
@@ -187,7 +187,7 @@ export default function TicketView() {
             </div>
             <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[var(--scl-text-secondary)]">Booking Ref</p>
             <p className="text-xl font-extrabold tracking-widest text-[var(--scl-text)]">{booking.bookingRef as string}</p>
-            <div className="mt-4 flex items-center gap-2 rounded-full bg-[#16a34a]/10 px-4 py-2 text-xs font-bold text-[#16a34a]">
+            <div className="mt-4 flex items-center gap-2 rounded-full bg-[#8B7D3C]/10 px-4 py-2 text-xs font-bold text-[#8B7D3C]">
               <I.Check className="h-3.5 w-3.5" /> Paid {money(booking.amount as number)}
             </div>
 
@@ -210,11 +210,11 @@ export default function TicketView() {
               <div className="absolute bottom-full left-0 right-0 mb-2 rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-2 shadow-xl animate-slide-up">
                 {typeof navigator.share === "function" && (
                   <button onClick={() => handleShare("share")} className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[var(--scl-text)] transition hover:bg-[var(--scl-surface-alt)]">
-                    <I.Phone className="h-5 w-5 text-[#16a34a]" /> Share via...
+                    <I.Phone className="h-5 w-5 text-[#8B7D3C]" /> Share via...
                   </button>
                 )}
                 <button onClick={() => handleShare("copy")} className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[var(--scl-text)] transition hover:bg-[var(--scl-surface-alt)]">
-                  <I.Package className="h-5 w-5 text-[#16a34a]" /> Copy ticket details
+                  <I.Package className="h-5 w-5 text-[#8B7D3C]" /> Copy ticket details
                 </button>
               </div>
             )}
@@ -222,7 +222,7 @@ export default function TicketView() {
 
           <button
             onClick={handleHome}
-            className="haptic-tap w-full rounded-2xl bg-gradient-to-r from-[#22c55e] to-[#16a34a] py-4 text-base font-bold text-white shadow-lg shadow-[#16a34a]/25 transition-all hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]"
+            className="haptic-tap w-full rounded-2xl bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] py-4 text-base font-bold text-white shadow-lg shadow-[#8B7D3C]/25 transition-all hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]"
           >
             Book Another Trip
           </button>

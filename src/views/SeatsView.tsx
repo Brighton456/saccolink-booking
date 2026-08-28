@@ -39,7 +39,7 @@ function RealSeat({
     "h-[52px] flex-1";
 
   const styles = {
-    available: "border-zinc-300 bg-[#e8eaed] text-[#0a7a42] hover:border-[#16a34a] hover:bg-emerald-50",
+    available: "border-zinc-300 bg-[#e8eaed] text-[#0a7a42] hover:border-[#8B7D3C] hover:bg-emerald-50",
     selected: "border-amber-400 bg-amber-400 text-white shadow-md scale-[1.02]",
     booked: "border-zinc-300 bg-zinc-200 text-zinc-400 opacity-60 cursor-not-allowed",
   };
@@ -174,7 +174,7 @@ export default function SeatsView() {
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 rounded-xl bg-[var(--scl-surface-alt)] px-3 py-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse-soft" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#B8A94E] animate-pulse-soft" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">{freeCount}/{capacity} free</span>
             </div>
           </div>
@@ -190,9 +190,9 @@ export default function SeatsView() {
               <span className="flex items-center gap-1.5">Rear <I.ArrowRight className="h-3 w-3 -rotate-90" /></span>
             </div>
             <div className="flex items-center gap-1.5">
-              <button onClick={() => setZoom((z) => Math.max(0.65, z - 0.1))} className="haptic-tap flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:border-[#16a34a]/30 hover:bg-[#16a34a]/5"><span className="text-sm font-bold">−</span></button>
+              <button onClick={() => setZoom((z) => Math.max(0.65, z - 0.1))} className="haptic-tap flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:border-[#8B7D3C]/30 hover:bg-[#8B7D3C]/5"><span className="text-sm font-bold">−</span></button>
               <span className="flex h-8 min-w-[2.5rem] items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] text-[10px] font-bold text-[var(--scl-text-secondary)]">{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom((z) => Math.min(1.4, z + 0.1))} className="haptic-tap flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:border-[#16a34a]/30 hover:bg-[#16a34a]/5"><span className="text-sm font-bold">+</span></button>
+              <button onClick={() => setZoom((z) => Math.min(1.4, z + 0.1))} className="haptic-tap flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:border-[#8B7D3C]/30 hover:bg-[#8B7D3C]/5"><span className="text-sm font-bold">+</span></button>
             </div>
           </div>
 
@@ -250,7 +250,7 @@ export default function SeatsView() {
             ) : (
               /* Fallback generic 2+aisle layout for other capacities */
               <div className="overflow-visible rounded-[50px_50px_16px_16px] border-[3px] border-[var(--scl-border)] bg-gradient-to-b from-[var(--scl-card)] to-[var(--scl-surface-alt)] p-5 pb-6 pt-8 shadow-[0_15px_35px_-8px_rgba(0,0,0,0.08)]">
-                <div className="absolute left-3 right-3 top-0 h-6 rounded-b-3xl bg-gradient-to-b from-[#16a34a]/8 to-transparent" />
+                <div className="absolute left-3 right-3 top-0 h-6 rounded-b-3xl bg-gradient-to-b from-[#8B7D3C]/8 to-transparent" />
                 {(() => {
                   // generic fallback rendering
                   const formatParts = seatFormat ? seatFormat.split(",").map(s => parseInt(s.trim(), 10)).filter(v => !isNaN(v) && v > 0) : [];
@@ -294,15 +294,15 @@ export default function SeatsView() {
           </div>
 
           {selectedDisplay.size > 0 && (
-            <div className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[#16a34a]/20 bg-[#16a34a]/5 px-4 py-3 animate-slide-down">
+            <div className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 px-4 py-3 animate-slide-down">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#16a34a] text-white text-xs font-bold">{selectedDisplay.size}</div>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8B7D3C] text-white text-xs font-bold">{selectedDisplay.size}</div>
                 <div>
                   <p className="text-xs font-bold text-[var(--scl-text)]">{selectedDisplay.size === 1 ? "Seat" : "Seats"} selected</p>
-                  <p className="text-[10px] font-semibold text-[#16a34a]">{[...selectedDisplay].sort((a,b)=> (a==="1X"? 1 : parseInt(a)) - (b==="1X"?1:parseInt(b))).join(", ")}</p>
+                  <p className="text-[10px] font-semibold text-[#8B7D3C]">{[...selectedDisplay].sort((a,b)=> (a==="1X"? 1 : parseInt(a)) - (b==="1X"?1:parseInt(b))).join(", ")}</p>
                 </div>
               </div>
-              <p className="text-lg font-extrabold text-[#16a34a]">{money(total)}</p>
+              <p className="text-lg font-extrabold text-[#8B7D3C]">{money(total)}</p>
             </div>
           )}
         </div>
@@ -314,7 +314,7 @@ export default function SeatsView() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[var(--scl-text-secondary)]"><I.Bus className="h-4 w-4" /> Vehicle</span><span className="rounded-lg bg-[var(--scl-surface-alt)] px-3 py-1 text-xs font-bold text-[var(--scl-text)]">{selectedTrip.vehicleType}</span></div>
                 <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[var(--scl-text-secondary)]"><I.MapPin className="h-4 w-4" /> Plate</span><span className="font-bold text-[var(--scl-text)]">{selectedTrip.plate}</span></div>
-                <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[var(--scl-text-secondary)]"><I.Calendar className="h-4 w-4" /> Departure</span><span className="font-bold text-[#16a34a]">{selectedTrip.departure}</span></div>
+                <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[var(--scl-text-secondary)]"><I.Calendar className="h-4 w-4" /> Departure</span><span className="font-bold text-[#8B7D3C]">{selectedTrip.departure}</span></div>
                 <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[var(--scl-text-secondary)]"><I.Ticket className="h-4 w-4" /> Price</span><span className="font-bold text-[var(--scl-text)]">{money(selectedTrip.price)}/seat</span></div>
               </div>
             </div>
@@ -326,17 +326,17 @@ export default function SeatsView() {
                 <>
                   <div className="mb-4 flex flex-wrap gap-2">
                     {[...selectedDisplay].sort((a,b)=> (a==="1X"? 99 : parseInt(a,10)) - (b==="1X"?99:parseInt(b,10))).map((lbl) => (
-                      <button key={lbl} onClick={() => toggleDisplay(lbl)} className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#16a34a] bg-[#16a34a]/10 text-sm font-bold text-[#16a34a] transition hover:bg-[#16a34a] hover:text-white">{lbl}</button>
+                      <button key={lbl} onClick={() => toggleDisplay(lbl)} className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[#8B7D3C] bg-[#8B7D3C]/10 text-sm font-bold text-[#8B7D3C] transition hover:bg-[#8B7D3C] hover:text-white">{lbl}</button>
                     ))}
                   </div>
                   <div className="space-y-2 border-t border-[var(--scl-border)] pt-3 text-sm">
                     <div className="flex justify-between"><span className="text-[var(--scl-text-secondary)]">{selectedDisplay.size} × {money(selectedTrip.price)}</span><span className="font-bold text-[var(--scl-text)]">{money(total)}</span></div>
-                    <div className="flex justify-between border-t border-[var(--scl-border)] pt-2"><span className="font-bold text-[var(--scl-text)]">Total</span><span className="text-xl font-extrabold text-[#16a34a]">{money(total)}</span></div>
+                    <div className="flex justify-between border-t border-[var(--scl-border)] pt-2"><span className="font-bold text-[var(--scl-text)]">Total</span><span className="text-xl font-extrabold text-[#8B7D3C]">{money(total)}</span></div>
                   </div>
                 </>
               )}
             </div>
-            <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`w-full rounded-2xl py-4 text-base font-bold shadow-lg transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white shadow-[#16a34a]/25 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
+            <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`w-full rounded-2xl py-4 text-base font-bold shadow-lg transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
               Continue to Checkout <I.ArrowRight className="ml-1 inline h-4 w-4" />
             </button>
           </div>
@@ -344,10 +344,10 @@ export default function SeatsView() {
 
         <div className="fixed bottom-16 left-0 right-0 z-40 border-t border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:hidden">
           <div className="flex items-center justify-between">
-            <button onClick={() => setShowSummary(true)} className="text-xs font-bold text-[#16a34a]">{selectedDisplay.size || 0} seat{(selectedDisplay.size || 0) !== 1 ? "s" : ""} · Tap for details</button>
+            <button onClick={() => setShowSummary(true)} className="text-xs font-bold text-[#8B7D3C]">{selectedDisplay.size || 0} seat{(selectedDisplay.size || 0) !== 1 ? "s" : ""} · Tap for details</button>
             <span className="text-xl font-extrabold text-[var(--scl-text)]">{money(total)}</span>
           </div>
-          <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`mt-3 w-full rounded-2xl py-3.5 text-base font-bold shadow-md transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white shadow-[#16a34a]/25 active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
+          <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`mt-3 w-full rounded-2xl py-3.5 text-base font-bold shadow-md transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
             Continue <I.ArrowRight className="ml-1 inline h-4 w-4" />
           </button>
         </div>
@@ -357,8 +357,8 @@ export default function SeatsView() {
         <div className="space-y-4">
           <div className="flex justify-between text-sm"><span className="text-[var(--scl-text-secondary)]">Vehicle</span><span className="font-semibold text-[var(--scl-text)]">{selectedTrip.vehicleType}</span></div>
           <div className="flex justify-between text-sm"><span className="text-[var(--scl-text-secondary)]">Plate</span><span className="font-semibold text-[var(--scl-text)]">{selectedTrip.plate}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-[var(--scl-text-secondary)]">Departure</span><span className="font-bold text-[#16a34a]">{selectedTrip.departure}</span></div>
-          <div className="flex justify-between border-t border-[var(--scl-border)] pt-3 text-sm"><span className="text-[var(--scl-text-secondary)]">Seats</span><span className="font-bold text-[#16a34a]">{selectedDisplay.size ? [...selectedDisplay].sort((a,b)=> (a==="1X"?99:parseInt(a))-(b==="1X"?99:parseInt(b))).join(", ") : "None"}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-[var(--scl-text-secondary)]">Departure</span><span className="font-bold text-[#8B7D3C]">{selectedTrip.departure}</span></div>
+          <div className="flex justify-between border-t border-[var(--scl-border)] pt-3 text-sm"><span className="text-[var(--scl-text-secondary)]">Seats</span><span className="font-bold text-[#8B7D3C]">{selectedDisplay.size ? [...selectedDisplay].sort((a,b)=> (a==="1X"?99:parseInt(a))-(b==="1X"?99:parseInt(b))).join(", ") : "None"}</span></div>
           <div className="flex justify-between border-t border-[var(--scl-border)] pt-3"><span className="text-sm text-[var(--scl-text-secondary)]">Total</span><span className="text-2xl font-extrabold text-[var(--scl-text)]">{money(total)}</span></div>
         </div>
       </BottomSheet>
