@@ -296,6 +296,21 @@ export default function HomeView() {
         </div>
       </div>
 
+      {/* Browse All Trips CTA */}
+      <div className="mx-auto mb-6 w-full max-w-5xl px-4">
+        <button
+          onClick={() => { haptic("tap"); playClick(); navigate("/all-trips"); }}
+          className="haptic-tap w-full rounded-2xl border-2 border-dashed border-[#16a34a]/30 bg-[#16a34a]/5 py-4 text-center transition-all hover:border-[#16a34a]/60 hover:bg-[#16a34a]/10"
+        >
+          <div className="flex items-center justify-center gap-3">
+            <I.Bus className="h-5 w-5 text-[#16a34a]" />
+            <span className="text-sm font-bold text-[#16a34a]">Browse All Available Trips</span>
+            <I.ArrowRight className="h-4 w-4 text-[#16a34a]" />
+          </div>
+          <p className="mt-1 text-xs text-[var(--scl-text-secondary)]">See every departure across all routes</p>
+        </button>
+      </div>
+
       {/* Trip Countdown */}
       <TripCountdown />
 

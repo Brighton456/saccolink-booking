@@ -28,8 +28,9 @@ export default function ResultsView() {
     const originStation = stations.find((s) => s.name.toLowerCase().includes(searchParams.origin.toLowerCase()));
     const destStation = stations.find((s) => s.name.toLowerCase().includes(searchParams.destination.toLowerCase()));
 
+    const now = new Date();
     return allTrips
-      .filter((t) => t.status === "scheduled" || t.status === "boarding")
+      .filter((t) => (t.status === "scheduled" || t.status === "boarding") && new Date(t.scheduled_at) > now)
       .map((trip) => {
         const route = trip.routes;
         const vehicle = trip.vehicles;

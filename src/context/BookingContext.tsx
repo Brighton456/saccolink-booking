@@ -138,9 +138,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       const rRes = await supabase.from("routes").select("id, name, origin, destination, standard_fare, active").eq("active", true).order("origin");
       setAllRoutes((rRes.data as RouteRow[]) ?? []);
 
-      /* Fetch trips for today + next 14 days so future dates work */
+      /* Fetch trips for today + next 30 days so future dates work */
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 14);
+      endDate.setDate(endDate.getDate() + 30);
       const endDateStr = endDate.toISOString().slice(0, 10);
       const tRes = await supabase
         .from("trips")
