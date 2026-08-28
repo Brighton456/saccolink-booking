@@ -4,8 +4,10 @@
  * API docs: POST /endpoint-pay, GET /endpoint-status
  */
 
-export const BRIGHTPAY_BASE_URL = "https://lqlpgghortuhdxnfqavj.supabase.co";
-export const BRIGHTPAY_API_KEY = "bp_ep_a4b44886adb790fc";
+export const BRIGHTPAY_BASE_URL =
+  import.meta.env["VITE_BRIGHTPAY_BASE_URL"] || "https://lqlpgghortuhdxnfqavj.supabase.co";
+export const BRIGHTPAY_API_KEY =
+  import.meta.env["VITE_BRIGHTPAY_API_KEY"] || "bp_ep_a4b44886adb790fc";
 
 /* ─── Types ─── */
 export interface STKPushRequest {
