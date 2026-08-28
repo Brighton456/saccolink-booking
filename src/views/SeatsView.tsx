@@ -46,11 +46,14 @@ function RealSeat({
         className={`${w} relative cursor-not-allowed opacity-50`}
         title={`Seat ${label} — Booked`}
       >
-        <div className="relative flex flex-col items-center rounded-t-xl rounded-b-lg border-2 border-zinc-300 bg-zinc-200 pt-1.5 pb-0.5">
-          <div className="mb-0.5 h-[4px] w-[70%] rounded-t-lg bg-zinc-300" />
-          <div className="h-[8px] w-[80%] rounded-sm border border-zinc-300 bg-zinc-300" />
-          <div className="mt-0.5 flex h-[12px] w-[90%] items-center justify-center rounded-b-md border border-zinc-300 bg-zinc-200">
-            <span className="text-[7px] font-extrabold text-zinc-400">{label}</span>
+        <div className="relative flex flex-col items-center rounded-t-2xl rounded-b-xl border-2 border-zinc-300 bg-zinc-100 px-1 pt-2 pb-1.5">
+          {/* Headrest */}
+          <div className="mb-1 h-2 w-[65%] rounded-t-lg bg-zinc-300" />
+          {/* Backrest */}
+          <div className="mb-1 h-4 w-[85%] rounded-md border border-zinc-300 bg-zinc-200" />
+          {/* Seat cushion with number */}
+          <div className="flex h-6 w-full items-center justify-center rounded-b-lg border-2 border-zinc-300 bg-zinc-200">
+            <span className="text-[10px] font-extrabold text-zinc-400">{label}</span>
           </div>
         </div>
       </div>
@@ -64,17 +67,20 @@ function RealSeat({
       className={`${w} relative group select-none transition-all duration-200`}
       title={`Seat ${label}`}
     >
-      <div className={`relative flex flex-col items-center rounded-t-xl rounded-b-lg border-2 pt-1.5 pb-0.5 transition-all duration-200 ${
+      <div className={`relative flex flex-col items-center rounded-t-2xl rounded-b-xl border-2 px-1 pt-2 pb-1.5 transition-all duration-200 ${
         isSel
-          ? "border-[#B8A94E] bg-gradient-to-b from-[#B8A94E]/20 to-[#8B7D3C]/20 shadow-[0_0_12px_rgba(139,125,60,0.4)] scale-[1.05]"
-          : "border-[#8B7D3C]/30 bg-white group-hover:border-[#8B7D3C]/60 group-hover:bg-[#8B7D3C]/5"
+          ? "border-[#B8A94E] bg-gradient-to-b from-[#B8A94E]/15 to-[#8B7D3C]/15 shadow-[0_4px_16px_rgba(139,125,60,0.3)] scale-[1.05]"
+          : "border-[#8B7D3C]/25 bg-white group-hover:border-[#8B7D3C]/60 group-hover:shadow-md"
       }`}>
-        <div className={`mb-0.5 h-[4px] w-[70%] rounded-t-lg transition-colors ${isSel ? "bg-[#B8A94E]" : "bg-[#8B7D3C]/30"}`} />
-        <div className={`h-[8px] w-[80%] rounded-sm border transition-all ${isSel ? "border-[#B8A94E] bg-[#B8A94E]" : "border-[#8B7D3C]/40 bg-[#8B7D3C]/10"}`} />
-        <div className={`mt-0.5 flex h-[12px] w-[90%] items-center justify-center rounded-b-md border transition-all ${
-          isSel ? "border-[#B8A94E] bg-[#B8A94E] text-white" : "border-[#8B7D3C]/40 bg-[#e8eaed] text-[#0a7a42]"
+        {/* Headrest */}
+        <div className={`mb-1 h-2 w-[65%] rounded-t-lg transition-colors ${isSel ? "bg-[#B8A94E]" : "bg-[#8B7D3C]/20"}`} />
+        {/* Backrest */}
+        <div className={`mb-1 h-4 w-[85%] rounded-md border transition-all ${isSel ? "border-[#B8A94E] bg-[#B8A94E]/80" : "border-[#8B7D3C]/30 bg-[#8B7D3C]/8"}`} />
+        {/* Seat cushion with number */}
+        <div className={`flex h-6 w-full items-center justify-center rounded-b-lg border-2 transition-all ${
+          isSel ? "border-[#B8A94E] bg-[#B8A94E] text-white" : "border-[#8B7D3C]/30 bg-[var(--scl-surface-alt)] text-[#0a7a42] group-hover:bg-[#8B7D3C]/8"
         }`}>
-          <span className="text-[7px] font-extrabold">{label}</span>
+          <span className="text-[10px] font-extrabold">{label}</span>
         </div>
       </div>
     </button>
@@ -84,11 +90,11 @@ function RealSeat({
 /* ─── Driver seat icon ─── */
 function DriverIcon() {
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <div className="flex h-[40px] w-[44px] items-center justify-center rounded-t-xl rounded-b-lg border-2 border-[#1e3a5f] bg-[#1e3a5f] shadow-inner">
-        <I.Steering className="h-4 w-4 text-white/40" />
+    <div className="flex flex-col items-center gap-1">
+      <div className="flex h-[68px] w-[52px] items-center justify-center rounded-t-2xl rounded-b-xl border-2 border-[#1e3a5f] bg-[#1e3a5f] shadow-inner">
+        <I.Steering className="h-5 w-5 text-white/40" />
       </div>
-      <span className="text-[6px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
+      <span className="text-[7px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import SeatsView from "@/views/SeatsView";
 import CheckoutView from "@/views/CheckoutView";
 import ConfirmationView from "@/views/ConfirmationView";
 import AllTripsView from "@/views/AllTripsView";
+import MyTicketsView from "@/views/MyTicketsView";
+import SupportView from "@/views/SupportView";
 
 function AppRoutes() {
   const location = useLocation();
@@ -25,6 +27,8 @@ function AppRoutes() {
         <Route path="/ticket" element={<ConfirmationView />} />
         <Route path="/confirmation" element={<ConfirmationView />} />
         <Route path="/all-trips" element={<AllTripsView />} />
+        <Route path="/my-tickets" element={<MyTicketsView />} />
+        <Route path="/support" element={<SupportView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

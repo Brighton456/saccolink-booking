@@ -342,6 +342,89 @@ export default function HomeView() {
           </div>
         </div>
       </div>
+
+      {/* ═══ About Kangaroo Shuttle ═══ */}
+      <div className="w-full bg-[var(--scl-card)] border-t border-[var(--scl-border)]">
+        <div className="mx-auto max-w-5xl px-4 py-12 md:py-16">
+          {/* Header */}
+          <div className="mb-10 text-center">
+            <span className="text-4xl">🦘</span>
+            <h2 className="mt-3 text-2xl font-extrabold text-[var(--scl-text)] md:text-3xl">About Kangaroo Shuttle</h2>
+            <p className="mt-2 max-w-xl mx-auto text-sm text-[var(--scl-text-secondary)]">
+              Over 20 years of safe, reliable, and comfortable travel across Kenya.
+            </p>
+          </div>
+
+          {/* Mission, Vision, Values grid */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {/* Vision */}
+            <div className="rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] p-6">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B7D3C]/10">
+                <I.Check className="h-5 w-5 text-[#8B7D3C]" />
+              </div>
+              <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-[#8B7D3C]">Our Vision</h3>
+              <p className="text-sm leading-relaxed text-[var(--scl-text-secondary)]">
+                To be a highly organized company in the provision of safe, reliable and competitive transport services that contribute to the economic development of the country.
+              </p>
+            </div>
+
+            {/* Mission */}
+            <div className="rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] p-6">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10">
+                <I.Shield className="h-5 w-5 text-blue-500" />
+              </div>
+              <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-500">Our Mission</h3>
+              <p className="text-sm leading-relaxed text-[var(--scl-text-secondary)]">
+                To provide suitable, competent and comfortable travel services to our customers in an environment of safety and reliability.
+              </p>
+            </div>
+
+            {/* Why Choose Us */}
+            <div className="rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] p-6">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10">
+                <I.Check className="h-5 w-5 text-purple-500" />
+              </div>
+              <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-purple-500">Why Choose Us</h3>
+              <ul className="space-y-1.5 text-sm text-[var(--scl-text-secondary)]">
+                <li className="flex items-start gap-2"><span className="mt-0.5 text-emerald-500">✓</span> Air-conditioned 14 & 16-seater vans</li>
+                <li className="flex items-start gap-2"><span className="mt-0.5 text-emerald-500">✓</span> Charging ports in every seat</li>
+                <li className="flex items-start gap-2"><span className="mt-0.5 text-emerald-500">✓</span> Trained & experienced drivers</li>
+                <li className="flex items-start gap-2"><span className="mt-0.5 text-emerald-500">✓</span> Punctual departures, every time</li>
+                <li className="flex items-start gap-2"><span className="mt-0.5 text-emerald-500">✓</span> Affordable & transparent pricing</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Services */}
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              { icon: "🚌", label: "Public Transport" },
+              { icon: "🚐", label: "Private Hire" },
+              { icon: "📦", label: "Courier Services" },
+              { icon: "🛣️", label: "All Major Routes" },
+            ].map((svc, i) => (
+              <div key={i} className="flex flex-col items-center rounded-xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 text-center shadow-sm">
+                <span className="text-2xl mb-1">{svc.icon}</span>
+                <span className="text-[11px] font-bold text-[var(--scl-text-secondary)]">{svc.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Trust badges */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            {[
+              "NTSA Licensed",
+              "20+ Years Experience",
+              "Sacco Registered",
+              "Fully Insured",
+            ].map((badge, i) => (
+              <span key={i} className="rounded-full border border-[var(--scl-border)] bg-[var(--scl-card)] px-4 py-1.5 text-[10px] font-bold text-[var(--scl-text-secondary)] shadow-sm">
+                ✓ {badge}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

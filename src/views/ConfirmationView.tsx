@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBooking } from "@/context/BookingContext";
 import { money, timeOf } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks";
 import { playClick, playSuccess } from "@/lib/sounds";
-import { renderBookingReceiptHtml, printBookingReceipt, type ReceiptData } from "@/lib/receipt-renderer";
+import { renderBookingReceiptHtml, printBookingReceipt, type ReceiptData, type CompanyReceiptConfig } from "@/lib/receipt-renderer";
+import { supabase } from "@/lib/supabase";
 import * as I from "@/icons";
 
 export default function ConfirmationView() {
@@ -34,6 +35,30 @@ export default function ConfirmationView() {
   };
 
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
+  const [companyConfig, setCompanyConfig] = useState<CompanyReceiptConfig | null>(null);
+
+  // Fetch the company's configured receipt template from Supabase
+  useEffect(() => {
+    supabase
+      .from("receipt_templates" as never)
+      .select("template_data" as never)
+      .eq("is_default" as never, true)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data && (data as { template_data?: Record<string, unknown> }).template_data) {
+          const td = (data as { template_data: Record<string, unknown> }).template_data;
+          setCompanyConfig({
+            headerText: (td.headerText as string) || "KANGAROO SHUTTLE",
+            accentColor: (td.accentColor as string) || "#8B7D3C",
+            showLogo: td.showLogo !== false,
+            logoUrl: (td.logoUrl as string) || null,
+            footerText: (td.footerText as string) || "Thank you for traveling with Kangaroo Shuttle!",
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const receiptCode = `SCL-${Date.now().toString(36).toUpperCase()}`;
   const bookingTime = new Date().toLocaleString("en-KE");
@@ -172,7 +197,7 @@ export default function ConfirmationView() {
                 departureTime: selectedTrip.departure,
                 date: tripDate,
                 saccoName: selectedTrip.saccoName,
-              });
+              }, companyConfig);
             }}
             className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
           >
@@ -224,7 +249,7 @@ export default function ConfirmationView() {
                   departureTime: selectedTrip.departure,
                   date: tripDate,
                   saccoName: selectedTrip.saccoName,
-                })}
+                }, companyConfig)}
                 title="Receipt Preview"
                 className="w-full border-0"
                 style={{ minHeight: 400 }}
