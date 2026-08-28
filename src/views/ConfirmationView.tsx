@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBooking } from "@/context/BookingContext";
 import { money, timeOf } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks";
 import { playClick, playSuccess } from "@/lib/sounds";
+import { renderBookingReceiptHtml, printBookingReceipt, type ReceiptData } from "@/lib/receipt-renderer";
 import * as I from "@/icons";
 
 export default function ConfirmationView() {
@@ -30,6 +32,8 @@ export default function ConfirmationView() {
     goHome();
     navigate("/");
   };
+
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   const receiptCode = `SCL-${Date.now().toString(36).toUpperCase()}`;
   const bookingTime = new Date().toLocaleString("en-KE");
@@ -141,10 +145,38 @@ export default function ConfirmationView() {
         {/* Actions */}
         <div className="mt-6 space-y-3">
           <button
-            onClick={() => { haptic("tap"); playClick(); }}
-            className="w-full rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
+            onClick={() => {
+              haptic("tap");
+              playClick();
+              setShowReceiptPreview(true);
+            }}
+            className="w-full rounded-2xl border-2 border-[#8B7D3C]/30 bg-[#8B7D3C]/5 py-3.5 text-sm font-bold text-[#8B7D3C] transition hover:border-[#8B7D3C]/60 hover:bg-[#8B7D3C]/10"
           >
-            📥 Save Ticket
+            👁 Preview Receipt
+          </button>
+          <button
+            onClick={() => {
+              haptic("tap");
+              playClick();
+              printBookingReceipt({
+                code: receiptCode,
+                seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
+                name: (booking as Record<string, unknown>).name as string ?? "—",
+                phone: (booking as Record<string, unknown>).phone as string ?? null,
+                fare: selectedTrip.price * selectedSeats.length,
+                method: (booking as Record<string, unknown>).method as string ?? "mpesa",
+                route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
+                origin: selectedTrip.trip.routes?.origin ?? "—",
+                destination: selectedTrip.trip.routes?.destination ?? "—",
+                vehiclePlate: selectedTrip.plate,
+                departureTime: selectedTrip.departure,
+                date: tripDate,
+                saccoName: selectedTrip.saccoName,
+              });
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
+          >
+            🖨 Print Receipt
           </button>
           <button
             onClick={handleDone}
@@ -160,6 +192,79 @@ export default function ConfirmationView() {
           <p className="mt-1 text-sm font-bold text-[#8B7D3C]">📞 0720 363 215</p>
         </div>
       </div>
+
+      {/* ─── Receipt Preview Modal ─── */}
+      {showReceiptPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative max-h-[90vh] w-full max-w-sm overflow-hidden rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-4 py-3">
+              <h3 className="text-sm font-bold text-[var(--scl-text)]">🎫 Receipt Preview</h3>
+              <button
+                onClick={() => setShowReceiptPreview(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--scl-border)] transition"
+              >
+                <I.X className="h-4 w-4 text-[var(--scl-text-secondary)]" />
+              </button>
+            </div>
+            {/* Receipt content */}
+            <div className="overflow-y-auto p-2" style={{ maxHeight: "calc(90vh - 120px)" }}>
+              <iframe
+                srcDoc={renderBookingReceiptHtml({
+                  code: receiptCode,
+                  seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
+                  name: (booking as Record<string, unknown>).name as string ?? "—",
+                  phone: (booking as Record<string, unknown>).phone as string ?? null,
+                  fare: selectedTrip.price * selectedSeats.length,
+                  method: (booking as Record<string, unknown>).method as string ?? "mpesa",
+                  route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
+                  origin: selectedTrip.trip.routes?.origin ?? "—",
+                  destination: selectedTrip.trip.routes?.destination ?? "—",
+                  vehiclePlate: selectedTrip.plate,
+                  departureTime: selectedTrip.departure,
+                  date: tripDate,
+                  saccoName: selectedTrip.saccoName,
+                })}
+                title="Receipt Preview"
+                className="w-full border-0"
+                style={{ minHeight: 400 }}
+              />
+            </div>
+            {/* Actions */}
+            <div className="flex gap-2 border-t border-[var(--scl-border)] bg-[var(--scl-surface-alt)] p-3">
+              <button
+                onClick={() => setShowReceiptPreview(false)}
+                className="flex-1 rounded-xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowReceiptPreview(false);
+                  printBookingReceipt({
+                    code: receiptCode,
+                    seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
+                    name: (booking as Record<string, unknown>).name as string ?? "—",
+                    phone: (booking as Record<string, unknown>).phone as string ?? null,
+                    fare: selectedTrip.price * selectedSeats.length,
+                    method: (booking as Record<string, unknown>).method as string ?? "mpesa",
+                    route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
+                    origin: selectedTrip.trip.routes?.origin ?? "—",
+                    destination: selectedTrip.trip.routes?.destination ?? "—",
+                    vehiclePlate: selectedTrip.plate,
+                    departureTime: selectedTrip.departure,
+                    date: tripDate,
+                    saccoName: selectedTrip.saccoName,
+                  });
+                }}
+                className="flex-1 rounded-xl bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] py-3 text-sm font-bold text-white shadow-lg shadow-[#8B7D3C]/25 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                🖨 Print Receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
