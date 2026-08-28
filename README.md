@@ -1,14 +1,17 @@
 # SaccoLink Passenger Booking Portal
 
-A standalone, public-facing booking portal for SaccoLink passengers. Built with React, Tailwind CSS, and Supabase.
+A standalone, public-facing booking portal for SaccoLink passengers. Built with React, Tailwind CSS, Supabase, and BrightPay.
 
 ## Features
 
 - **Search trips** — origin/destination autocomplete from real stations
 - **Interactive seat selection** — visual van layout with live availability
-- **M-Pesa STK Push** — pay directly from phone
+- **M-Pesa STK Push** — pay directly from phone via BrightPay
 - **Digital boarding pass** — instant ticket with booking reference
-- **Mobile-first** — works perfectly on phones, tablets, and desktop
+- **Mobile-first** — Android-optimized with haptic feedback, dark mode, skeleton loading
+- **Favorite routes** — saved to localStorage for quick rebooking
+- **Trip countdown** — live timer until next departure
+- **Share ticket** — copy or native share your boarding pass
 
 ## Setup
 
@@ -23,17 +26,6 @@ cp .env.example .env.local
 npm run dev
 ```
 
-## Deploy to Vercel
-
-```bash
-# Option 1: CLI
-npx vercel --prod
-
-# Option 2: GitHub integration
-# Push to GitHub, connect repo in Vercel dashboard
-# Set env vars in Vercel project settings
-```
-
 ## Environment Variables
 
 | Variable | Description |
@@ -41,18 +33,20 @@ npx vercel --prod
 | `VITE_SUPABASE_URL` | Your Supabase project URL |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Your Supabase anon/publishable key |
 
+> **BrightPay credentials** are configured in `src/lib/brightpay.ts`. No env vars needed.
+
 ## Architecture
 
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **Payments**: Safaricom Daraja STK Push via Supabase Edge Functions
+- **Payments**: BrightPay M-Pesa STK Push (frontend-only integration)
 - **Database**: Same database as the main SaccoLink admin system
-- **Deployment**: Vercel (separate project from admin dashboard)
 
-## How It Connects
+## How the Payment Flow Works
 
-The booking portal uses the same Supabase database as the main SaccoLink admin system. When a passenger books a ticket:
-1. The booking is created via `api_online_booking` PostgreSQL function
-2. The ticket appears instantly in the station clerk's portal
-3. M-Pesa payments are processed via `mpesa_stk_push` Edge Function
-4. Seat availability updates in real-time for all users
+1. Passenger selects seats and enters details
+2. Seats are booked via `api_online_booking` PostgreSQL function
+3. BrightPay `endpoint-pay` triggers M-Pesa STK Push to passenger's phone
+4. Passenger enters M-Pesa PIN on their phone
+5. Frontend polls `endpoint-status` every 3s until payment completes
+6. Digital boarding pass is generated with M-Pesa receipt
