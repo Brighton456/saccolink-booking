@@ -108,32 +108,33 @@ export default function SeatsView() {
   const formatParts = seatFormat ? seatFormat.split(",").map(s => parseInt(s.trim(), 10)).filter(v => !isNaN(v) && v > 0) : [];
 
   // Build rows from format
-  const layoutRows: (number[] | "driver")[] = [];
+  const layoutRows: ({ seats: number[] } | { driver: true })[] = [];
   let seatCounter = 1;
   if (formatParts.length > 0 && Math.abs(formatParts.reduce((a,b) => a+b, 0) - capacity) <= 2) {
     formatParts.forEach((rowSize, idx) => {
       if (idx === 0) {
-        // Cabin: co-driver (1X) + driver
-        layoutRows.push([seatCounter]); // seat 1 = 1X
-        seatCounter += rowSize > 1 ? rowSize - 1 : 0;
-        layoutRows.push("driver");
+        // Cabin: seat 1 (passenger) + 1X (co-driver next to driver) + driver
+        const cabinSeats = Array.from({ length: rowSize }, () => seatCounter++);
+        layoutRows.push({ seats: cabinSeats });
+        layoutRows.push({ driver: true });
       } else {
         const seats = Array.from({ length: rowSize }, () => seatCounter++);
-        layoutRows.push(seats);
+        layoutRows.push({ seats });
       }
     });
   } else {
     // Fallback: 2 front + rows of 3
-    layoutRows.push([1]); // 1X
-    layoutRows.push("driver");
-    let sn = 2;
+    layoutRows.push({ seats: [1, 2] }); // seat 1 + 1X
+    layoutRows.push({ driver: true });
+    let sn = 3;
     while (sn <= capacity) {
       const rowLen = Math.min(3, capacity - sn + 1);
-      layoutRows.push(Array.from({ length: rowLen }, () => sn++));
+      layoutRows.push({ seats: Array.from({ length: rowLen }, () => sn++) });
     }
   }
 
-  const seatLabel = (n: number) => n === 1 ? "1X" : String(n);
+  // Seat 2 is always 1X (co-driver next to driver)
+  const seatLabel = (n: number) => n === 2 ? "1X" : String(n);
 
   const total = selected.size * selectedTrip.price;
 
@@ -219,7 +220,7 @@ export default function SeatsView() {
 
               {/* Layout rows */}
               {layoutRows.map((row, ri) => {
-                if (row === "driver") {
+                if ('driver' in row && row.driver) {
                   return (
                     <div key={ri} className="mb-3 flex items-center justify-end px-1">
                       <div className="flex flex-col items-center gap-1">
@@ -231,6 +232,7 @@ export default function SeatsView() {
                     </div>
                   );
                 }
+                const seats = row.seats;
                 const rowLabel = ri === 0 ? "" : String.fromCharCode(64 + ri); // A, B, C...
                 return (
                   <div key={ri} className="relative mb-3 flex items-center gap-0 pl-0">
@@ -242,7 +244,7 @@ export default function SeatsView() {
                       </div>
                     )}
                     <div className="flex gap-2">
-                      {row.slice(0, Math.min(2, row.length)).map((n) => (
+                      {seats.slice(0, Math.min(2, seats.length)).map((n) => (
                         <SeatButton
                           key={n}
                           num={n}
@@ -257,7 +259,7 @@ export default function SeatsView() {
                       <div className="h-full w-px border-l border-dashed border-[var(--scl-border)]/50" />
                     </div>
                     <div className="flex gap-2">
-                      {row.slice(2).map((n) => (
+                      {seats.slice(2).map((n) => (
                         <SeatButton
                           key={n}
                           num={n}
@@ -267,8 +269,8 @@ export default function SeatsView() {
                           showLabel
                         />
                       ))}
-                      {row.length < 3 &&
-                        Array.from({ length: Math.max(0, 3 - row.length) }).map((_, i) => (
+                      {seats.length < 3 &&
+                        Array.from({ length: Math.max(0, 3 - seats.length) }).map((_, i) => (
                           <div key={`f-${i}`} className="h-[3.25rem] w-[2.75rem]" />
                         ))}
                     </div>

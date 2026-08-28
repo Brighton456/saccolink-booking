@@ -258,7 +258,7 @@ export default function CheckoutView() {
               </div>
               <div className="mt-2 flex justify-between text-sm">
                 <span className="font-medium text-[var(--scl-text-secondary)]">Seat(s)</span>
-                <span className="font-bold text-[var(--scl-text)]">{selectedSeats.join(", ")}</span>
+                <span className="font-bold text-[var(--scl-text)]">{selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", ")}</span>
               </div>
               <div className="mt-3 flex justify-between border-t border-[#16a34a]/20 pt-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Total</span>

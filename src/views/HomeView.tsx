@@ -60,7 +60,7 @@ function TripCountdown() {
 
 export default function HomeView() {
   const navigate = useNavigate();
-  const { stations, loading, handleSearch, favoriteRoutes, showToast } = useBooking();
+  const { stations, allRoutes, loading, handleSearch, favoriteRoutes, showToast } = useBooking();
   const haptic = useHaptic();
   const [activeTab, setActiveTab] = useState<"shuttle" | "parcel">("shuttle");
   const [origin, setOrigin] = useState("");
@@ -70,7 +70,13 @@ export default function HomeView() {
   const [showOriginDrop, setShowOriginDrop] = useState(false);
   const [showDestDrop, setShowDestDrop] = useState(false);
 
-  const names = useMemo(() => stations.map((s) => s.name).sort(), [stations]);
+  const names = useMemo(() => {
+    const stationNames = stations.map((s) => s.name);
+    const routeNames = allRoutes
+      .filter((r) => r.origin && r.destination)
+      .map((r) => `${r.origin} → ${r.destination}`);
+    return [...new Set([...routeNames, ...stationNames])].sort();
+  }, [stations, allRoutes]);
   const filteredOrigin = useMemo(() => names.filter((n) => n.toLowerCase().includes(origin.toLowerCase())), [names, origin]);
   const filteredDest = useMemo(() => names.filter((n) => n.toLowerCase().includes(destination.toLowerCase())), [names, destination]);
 
@@ -178,7 +184,16 @@ export default function HomeView() {
                         onBlur={() => setTimeout(() => setShowOriginDrop(false), 200)}
                       />
                     </div>
-                    <AutoDrop items={filteredOrigin} value={origin} onSelect={(v) => { setOrigin(v); setShowOriginDrop(false); }} show={showOriginDrop} />
+                    <AutoDrop items={filteredOrigin} value={origin} onSelect={(v) => {
+                      if (v.includes(" → ")) {
+                        const [o, d] = v.split(" → ");
+                        setOrigin(o?.trim() ?? "");
+                        setDestination(d?.trim() ?? "");
+                      } else {
+                        setOrigin(v);
+                      }
+                      setShowOriginDrop(false);
+                    }} show={showOriginDrop} />
                   </div>
 
                   {/* Swap button */}
@@ -204,7 +219,16 @@ export default function HomeView() {
                         onBlur={() => setTimeout(() => setShowDestDrop(false), 200)}
                       />
                     </div>
-                    <AutoDrop items={filteredDest} value={destination} onSelect={(v) => { setDestination(v); setShowDestDrop(false); }} show={showDestDrop} />
+                    <AutoDrop items={filteredDest} value={destination} onSelect={(v) => {
+                      if (v.includes(" → ")) {
+                        const [o, d] = v.split(" → ");
+                        setOrigin(o?.trim() ?? "");
+                        setDestination(d?.trim() ?? "");
+                      } else {
+                        setDestination(v);
+                      }
+                      setShowDestDrop(false);
+                    }} show={showDestDrop} />
                   </div>
 
                   {/* Date */}

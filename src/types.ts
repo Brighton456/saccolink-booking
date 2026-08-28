@@ -7,8 +7,9 @@ export interface RouteRow {
   id: string;
   name: string;
   standard_fare: number;
-  origin_station_id?: string;
-  destination_station_id?: string;
+  origin: string;
+  destination: string;
+  active?: boolean;
 }
 
 export interface Vehicle {

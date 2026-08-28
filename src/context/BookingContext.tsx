@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { today } from "@/lib/utils";
-import type { Station, TripRow, TicketRow, RouteStop, SearchResult, SearchParams } from "@/types";
+import type { Station, TripRow, TicketRow, RouteStop, SearchResult, SearchParams, RouteRow } from "@/types";
 
 export interface Notification {
   id: string;
@@ -13,6 +13,7 @@ export interface Notification {
 interface BookingContextValue {
   /* Data */
   stations: Station[];
+  allRoutes: RouteRow[];
   allTrips: TripRow[];
   tickets: TicketRow[];
   routeStops: RouteStop[];
@@ -84,6 +85,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   /* Data from Supabase */
   const [stations, setStations] = useState<Station[]>([]);
+  const [allRoutes, setAllRoutes] = useState<RouteRow[]>([]);
   const [allTrips, setAllTrips] = useState<TripRow[]>([]);
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [routeStops, setRouteStops] = useState<RouteStop[]>([]);
@@ -131,11 +133,20 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     (async () => {
       const sRes = await supabase.from("stations").select("id, name").order("name");
       setStations((sRes.data as Station[]) ?? []);
+
+      /* Fetch active routes so the dropdown can show "Nairobi → Nakuru" */
+      const rRes = await supabase.from("routes").select("id, name, origin, destination, standard_fare, active").eq("active", true).order("origin");
+      setAllRoutes((rRes.data as RouteRow[]) ?? []);
+
+      /* Fetch trips for today + next 14 days so future dates work */
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 14);
+      const endDateStr = endDate.toISOString().slice(0, 10);
       const tRes = await supabase
         .from("trips")
         .select("*, routes(*), vehicles(*), drivers(*), saccos(id, name)")
         .gte("scheduled_at", today())
-        .lte("scheduled_at", today() + "T23:59:59")
+        .lte("scheduled_at", endDateStr + "T23:59:59")
         .order("scheduled_at");
       const tripData = (tRes.data as TripRow[]) ?? [];
       setAllTrips(tripData);
@@ -223,7 +234,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<BookingContextValue>(
     () => ({
-      stations, allTrips, tickets, routeStops, saccosMap, loading,
+      stations, allRoutes, allTrips, tickets, routeStops, saccosMap, loading,
       searchParams, selectedTrip, selectedSeats, booking,
       favoriteRoutes, addFavorite, removeFavorite, isFavorite,
       history, addToHistory: completeBooking,
@@ -231,7 +242,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       toasts, showToast, dismissToast,
       handleSearch, selectTrip, confirmSeats, completeBooking, goHome, updateDate,
     }),
-    [stations, allTrips, tickets, routeStops, saccosMap, loading, searchParams, selectedTrip, selectedSeats, booking, favoriteRoutes, addFavorite, removeFavorite, isFavorite, history, completeBooking, darkMode, toggleDarkMode, toasts, showToast, dismissToast, handleSearch, selectTrip, confirmSeats, goHome, updateDate],
+    [stations, allRoutes, allTrips, tickets, routeStops, saccosMap, loading, searchParams, selectedTrip, selectedSeats, booking, favoriteRoutes, addFavorite, removeFavorite, isFavorite, history, completeBooking, darkMode, toggleDarkMode, toasts, showToast, dismissToast, handleSearch, selectTrip, confirmSeats, goHome, updateDate],
   );
 
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
