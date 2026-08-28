@@ -48,6 +48,18 @@ export function renderBookingReceiptHtml(data: ReceiptData, company?: CompanyRec
   // Header
   const headerText = company?.headerText || data.saccoName;
   lines.push(`<h1 style="font-size:16px;text-align:center;margin:0 0 2px;color:${headerColor}">${escape(headerText)}</h1>`);
+
+  // Contact details (for Kangaroo Shuttle)
+  if (headerText.toUpperCase().includes("KANGAROO")) {
+    lines.push(
+      `<div style="text-align:center;font-size:9px;margin:3px 0;line-height:1.5">` +
+      `Kitale: 0728944406 · Eldoret: 0727698996<br/>` +
+      `Nakuru: 0727360080<br/>` +
+      `kangarooshuttle@yahoo.com<br/>` +
+      `PIN: P051319837M` +
+      `</div>`,
+    );
+  }
   lines.push(`<div style="text-align:center;font-size:10px;letter-spacing:1px">PASSENGER BOARDING TICKET</div>`);
 
   // Divider
