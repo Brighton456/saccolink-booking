@@ -41,7 +41,7 @@ export function renderBookingReceiptHtml(data: ReceiptData, company?: CompanyRec
   const headerColor = company?.accentColor || "#8B7D3C";
   const logoSrc = company?.logoUrl || "/kangaroo-logo.png";
   if (company?.showLogo !== false) {
-    lines.push(`<img src="${escape(logoSrc)}" style="height:55px;margin:0 auto 6px;display:block" onerror="this.style.display='none'" />`);
+    lines.push(`<img src="${escape(logoSrc)}" style="height:55px;margin:0 auto 6px;display:block;mix-blend-mode:multiply" onerror="this.style.display='none'" />`);
   }
 
   // Header

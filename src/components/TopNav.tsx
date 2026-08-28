@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useBooking } from "@/context/BookingContext";
+import { usePassenger } from "@/context/PassengerAuth";
+import LoginModal from "@/components/LoginModal";
 import * as I from "@/icons";
 
 export default function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { darkMode, toggleDarkMode } = useBooking();
+  const { passenger } = usePassenger();
 
   const isHome = location.pathname === "/";
   const isTicket = location.pathname === "/ticket";
@@ -21,7 +25,7 @@ export default function TopNav() {
           className="flex cursor-pointer items-center gap-2.5"
           onClick={() => { if (isHome) window.scrollTo({ top: 0, behavior: "smooth" }); }}
         >
-          <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-10 w-auto" />
+          <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-10 w-auto" style={{ mixBlendMode: "screen" }} />
           <span className="text-lg font-extrabold tracking-tight text-[var(--scl-text)]">
             Kangaroo <span className="text-[#8B7D3C]">Shuttle</span>
           </span>
@@ -44,6 +48,13 @@ export default function TopNav() {
         <div className="flex items-center gap-2 md:hidden">
           <button onClick={toggleDarkMode} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] text-sm transition hover:bg-[var(--scl-border)]">
             {darkMode ? "☀️" : "🌙"}
+          </button>
+          <button onClick={() => setShowLogin(true)} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] transition hover:bg-[var(--scl-border)]">
+            {passenger ? (
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#8B7D3C] text-[10px] font-bold text-white">{passenger.name.charAt(0).toUpperCase()}</span>
+            ) : (
+              <I.Phone className="h-4 w-4 text-[var(--scl-text-secondary)]" />
+            )}
           </button>
           {showBack && (
             <button onClick={() => navigate(-1)} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:bg-[var(--scl-border)]">
@@ -76,6 +87,8 @@ export default function TopNav() {
           </div>
         </div>
       )}
+
+      <LoginModal open={showLogin} onClose={() => setShowLogin(false)} />
     </div>
   );
 }

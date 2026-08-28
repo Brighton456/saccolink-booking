@@ -120,7 +120,7 @@ export default function HomeView() {
         <div className="absolute left-20 top-24 h-1.5 w-1.5 rounded-full bg-[#8B7D3C] animate-pulse-soft" style={{ animationDelay: "0.5s" }} />
 
         <div className="relative z-10 mx-auto max-w-7xl text-center">
-          <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="mx-auto mb-4 h-20 w-auto md:h-28" />
+          <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="mx-auto mb-4 h-20 w-auto md:h-28" style={{ mixBlendMode: "screen" }} />
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/70">
             <span className="h-1.5 w-1.5 rounded-full bg-[#B8A94E] animate-pulse-soft" />
             Live Trip Tracking

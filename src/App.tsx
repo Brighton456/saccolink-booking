@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { BookingProvider } from "@/context/BookingContext";
+import { PassengerAuthProvider } from "@/context/PassengerAuth";
 import TopNav from "@/components/TopNav";
 import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
@@ -60,7 +61,9 @@ function AppInner() {
 export default function App() {
   return (
     <BookingProvider>
-      <AppInner />
+      <PassengerAuthProvider>
+        <AppInner />
+      </PassengerAuthProvider>
     </BookingProvider>
   );
 }
