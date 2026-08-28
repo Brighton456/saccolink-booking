@@ -20,43 +20,76 @@ function internalToDisplay(internal: number, isRealistic: boolean): string {
   return String(internal);
 }
 
-/* ─── Seat shape - matches screenshot: grey box, green number, handle at bottom ─── */
+/* ─── Realistic car seat shape — headrest + backrest + cushion ─── */
 function RealSeat({
   label,
   state,
   onClick,
-  variant,
+  width,
 }: {
   label: string;
   state: "available" | "selected" | "booked";
   onClick: () => void;
-  variant: "cabin" | "cabin-mid" | "bench" | "single" | "rear";
+  width?: string;
 }) {
   const haptic = useHaptic();
-  const size =
-    variant === "cabin" ? "h-[40px] w-[50px]" :
-    variant === "cabin-mid" ? "h-[40px] w-[44px]" :
-    "h-[40px] flex-1";
+  const w = width || "flex-1";
 
-  const styles = {
-    available: "border-zinc-300 bg-[#e8eaed] text-[#0a7a42] hover:border-[#8B7D3C] hover:bg-emerald-50",
-    selected: "border-amber-400 bg-amber-400 text-white shadow-md scale-[1.02]",
-    booked: "border-zinc-300 bg-zinc-200 text-zinc-400 opacity-60 cursor-not-allowed",
+  const handleTap = () => {
+    if (state === "booked") { haptic("error"); return; }
+    haptic("tap"); playClick(); onClick();
   };
 
+  if (state === "booked") {
+    return (
+      <div
+        className={`${w} relative cursor-not-allowed opacity-50`}
+        title={`Seat ${label} — Booked`}
+      >
+        <div className="relative flex flex-col items-center rounded-t-xl rounded-b-lg border-2 border-zinc-300 bg-zinc-200 pt-1.5 pb-0.5">
+          <div className="mb-0.5 h-[4px] w-[70%] rounded-t-lg bg-zinc-300" />
+          <div className="h-[8px] w-[80%] rounded-sm border border-zinc-300 bg-zinc-300" />
+          <div className="mt-0.5 flex h-[12px] w-[90%] items-center justify-center rounded-b-md border border-zinc-300 bg-zinc-200">
+            <span className="text-[7px] font-extrabold text-zinc-400">{label}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isSel = state === "selected";
   return (
     <button
-      onClick={() => {
-        if (state === "booked") { haptic("error"); return; }
-        haptic("tap"); playClick(); onClick();
-      }}
-      className={`relative flex flex-col items-center justify-center rounded-[3px] border-2 font-extrabold text-[11px] select-none transition-all ${size} ${styles[state]}`}
-      title={state === "booked" ? `Seat ${label} — Booked` : `Seat ${label}`}
+      onClick={handleTap}
+      className={`${w} relative group select-none transition-all duration-200`}
+      title={`Seat ${label}`}
     >
-      <div className={`absolute -top-[1px] h-[5px] w-[60%] rounded-b-[2px] ${state === "selected" ? "bg-amber-300" : state === "booked" ? "bg-zinc-300" : "bg-zinc-300"}`} />
-      <span className={state === "selected" ? "text-white" : state === "booked" ? "text-zinc-500" : "text-[#0a7a42]"}>{label}</span>
-      <div className={`absolute bottom-[4px] h-[6px] w-6 rounded-[2px] border ${state === "selected" ? "border-amber-200 bg-white/70" : "border-zinc-400 bg-white/70"}`} />
+      <div className={`relative flex flex-col items-center rounded-t-xl rounded-b-lg border-2 pt-1.5 pb-0.5 transition-all duration-200 ${
+        isSel
+          ? "border-[#B8A94E] bg-gradient-to-b from-[#B8A94E]/20 to-[#8B7D3C]/20 shadow-[0_0_12px_rgba(139,125,60,0.4)] scale-[1.05]"
+          : "border-[#8B7D3C]/30 bg-white group-hover:border-[#8B7D3C]/60 group-hover:bg-[#8B7D3C]/5"
+      }`}>
+        <div className={`mb-0.5 h-[4px] w-[70%] rounded-t-lg transition-colors ${isSel ? "bg-[#B8A94E]" : "bg-[#8B7D3C]/30"}`} />
+        <div className={`h-[8px] w-[80%] rounded-sm border transition-all ${isSel ? "border-[#B8A94E] bg-[#B8A94E]" : "border-[#8B7D3C]/40 bg-[#8B7D3C]/10"}`} />
+        <div className={`mt-0.5 flex h-[12px] w-[90%] items-center justify-center rounded-b-md border transition-all ${
+          isSel ? "border-[#B8A94E] bg-[#B8A94E] text-white" : "border-[#8B7D3C]/40 bg-[#e8eaed] text-[#0a7a42]"
+        }`}>
+          <span className="text-[7px] font-extrabold">{label}</span>
+        </div>
+      </div>
     </button>
+  );
+}
+
+/* ─── Driver seat icon ─── */
+function DriverIcon() {
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="flex h-[40px] w-[44px] items-center justify-center rounded-t-xl rounded-b-lg border-2 border-[#1e3a5f] bg-[#1e3a5f] shadow-inner">
+        <I.Steering className="h-4 w-4 text-white/40" />
+      </div>
+      <span className="text-[6px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
+    </div>
   );
 }
 
@@ -198,58 +231,86 @@ export default function SeatsView() {
 
           <div className="relative w-full max-w-[260px] transition-transform duration-300" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
             {isRealistic && layout ? (
-              <div className="relative rounded-t-[36px] rounded-b-[20px] border-[2px] border-zinc-300 bg-white px-3 pb-5 pt-2 shadow-xl">
-                <div className="absolute -left-[8px] top-[68px] h-7 w-[10px] rounded-l-full border border-zinc-300 bg-white shadow-sm" />
-                <div className="absolute -right-[8px] top-[68px] h-7 w-[10px] rounded-r-full border border-zinc-300 bg-white shadow-sm" />
-                <div className="relative mb-2 flex h-[52px] items-end justify-center rounded-t-[28px] border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white px-2">
-                  <div className="absolute inset-x-3 top-3 h-6 rounded-t-[18px] border border-zinc-200 bg-white/80" />
-                  <div className="absolute right-[18px] top-[10px] flex h-7 w-7 items-center justify-center rounded-full border border-zinc-300 bg-white text-zinc-400">
-                    <I.Steering className="h-4 w-4" />
+              <div className="relative rounded-b-[24px] border-2 border-zinc-300 bg-gradient-to-b from-white via-white to-zinc-50 shadow-xl overflow-hidden">
+                {/* Roof rails */}
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-zinc-200 via-zinc-100 to-zinc-200" />
+                <div className="absolute right-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-zinc-200 via-zinc-100 to-zinc-200" />
+
+                {/* Windshield / bonnet */}
+                <div className="relative mx-3 mt-3 mb-1">
+                  <div className="relative h-[50px] rounded-t-[40px] border-2 border-b-0 border-zinc-300 bg-gradient-to-b from-zinc-50 to-white overflow-hidden">
+                    <div className="absolute inset-x-4 top-2 bottom-4 rounded-t-[28px] bg-gradient-to-b from-sky-100/60 to-sky-50/30 border border-zinc-200/60" />
+                    <div className="absolute bottom-0 inset-x-2 h-3 rounded-t-sm bg-zinc-200/60" />
+                    <div className="absolute right-5 top-3 flex h-6 w-6 items-center justify-center rounded-full border-2 border-zinc-300 bg-white shadow-sm">
+                      <I.Steering className="h-3 w-3 text-zinc-400" />
+                    </div>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-1 h-2 w-6 rounded-b-sm bg-zinc-300/60" />
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-end justify-between gap-2 px-1">
-                    <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} variant="cabin" />
-                    <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} variant="cabin-mid" />
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex h-[52px] w-[64px] items-center justify-center rounded-lg border border-zinc-400 bg-[#1e3a5f] shadow-inner">
-                        <I.Steering className="h-5 w-5 text-white/30" />
-                      </div>
-                      <span className="text-[7px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
-                    </div>
+
+                {/* Side mirrors */}
+                <div className="absolute -left-[10px] top-[68px] h-6 w-3 rounded-l-full border-2 border-zinc-300 bg-white shadow" />
+                <div className="absolute -right-[10px] top-[68px] h-6 w-3 rounded-r-full border-2 border-zinc-300 bg-white shadow" />
+
+                {/* Interior */}
+                <div className="px-4 pb-4 pt-1 space-y-2">
+                  {/* Cabin row: 1 | 1X | Driver */}
+                  <div className="flex items-end justify-between gap-1 px-1">
+                    <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} width="w-[64px]" />
+                    <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} width="w-[56px]" />
+                    <DriverIcon />
                   </div>
-                  <div className="flex gap-[6px]">
+
+                  <div className="mx-2 h-px bg-zinc-200" />
+
+                  {/* Row 2 — full bench */}
+                  <div className="flex gap-2 px-1">
                     {layout.row2.map((lbl: string) => (
-                      <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} variant="bench" />
+                      <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
                   </div>
-                  <div className="flex gap-3">
-                    <div className="w-[30%]"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} variant="single" /></div>
-                    <div className="flex flex-1 gap-[6px] justify-end">
+
+                  {/* Sliding door indicator */}
+                  <div className="absolute -left-[3px] flex h-10 w-1.5 items-center justify-center rounded-r-sm bg-amber-400/70 border border-amber-300">
+                    <span className="text-[5px] font-bold text-amber-700 [writing-mode:vertical-rl] rotate-180">DOOR</span>
+                  </div>
+
+                  {/* Row 3 — left single + right double with aisle */}
+                  <div className="flex gap-1.5 px-1">
+                    <div className="w-[28%]"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
+                    <div className="flex w-[4%] items-center justify-center"><div className="h-full w-px border-l border-dashed border-zinc-300" /></div>
+                    <div className="flex flex-1 gap-2">
                       {layout.row3right.map((lbl: string) => (
-                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} variant="single" />
+                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <div className="w-[30%]"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} variant="single" /></div>
-                    <div className="flex flex-1 gap-[6px] justify-end">
+
+                  {/* Row 4 */}
+                  <div className="flex gap-1.5 px-1">
+                    <div className="w-[28%]"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
+                    <div className="flex w-[4%] items-center justify-center"><div className="h-full w-px border-l border-dashed border-zinc-300" /></div>
+                    <div className="flex flex-1 gap-2">
                       {layout.row4right.map((lbl: string) => (
-                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} variant="single" />
+                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-[6px]">
+
+                  {/* Rear bench */}
+                  <div className="flex gap-2 px-1">
                     {layout.rear.map((lbl: string) => (
-                      <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} variant="rear" />
+                      <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
                   </div>
+
+                  {/* Rear window */}
+                  <div className="mx-8 mt-1 h-3 rounded-b-lg border-2 border-t-0 border-zinc-200 bg-sky-50/40" />
                 </div>
-                <div className="absolute -left-[6px] top-[172px] h-14 w-[6px] rounded-r-md border border-amber-300 bg-amber-100" />
               </div>
             ) : (
               /* Fallback generic 2+aisle layout for other capacities */
-              <div className="overflow-visible rounded-[50px_50px_16px_16px] border-[3px] border-[var(--scl-border)] bg-gradient-to-b from-[var(--scl-card)] to-[var(--scl-surface-alt)] p-5 pb-6 pt-8 shadow-[0_15px_35px_-8px_rgba(0,0,0,0.08)]">
+              <div className="overflow-visible rounded-b-[24px] border-2 border-zinc-300 bg-gradient-to-b from-white to-zinc-50 p-5 pb-6 pt-8 shadow-xl">
                 <div className="absolute left-3 right-3 top-0 h-6 rounded-b-3xl bg-gradient-to-b from-[#8B7D3C]/8 to-transparent" />
                 {(() => {
                   // generic fallback rendering
