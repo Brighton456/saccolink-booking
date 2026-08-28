@@ -35,33 +35,40 @@ export default function MyTicketsView() {
           </div>
         ) : (
           <div className="space-y-3">
-            {history.map((h, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-sm transition hover:shadow-md"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B7D3C]/10">
-                      <I.Bus className="h-5 w-5 text-[#8B7D3C]" />
+            {history.map((h, i) => {
+              const route = String(h.route || "—");
+              const date = String(h.date || "");
+              const total = Number(h.total || 0);
+              const seats = Array.isArray(h.seats) ? h.seats.map(String) : [];
+              const receiptCode = String(h.receiptCode || "—");
+              return (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B7D3C]/10">
+                        <I.Bus className="h-5 w-5 text-[#8B7D3C]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-[var(--scl-text)]">{route}</p>
+                        <p className="text-xs text-[var(--scl-text-secondary)]">
+                          {date ? new Date(date).toLocaleDateString("en-KE", { weekday: "short", day: "numeric", month: "short" }) : "—"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-[var(--scl-text)]">{h.route}</p>
-                      <p className="text-xs text-[var(--scl-text-secondary)]">
-                        {new Date(h.date).toLocaleDateString("en-KE", { weekday: "short", day: "numeric", month: "short" })}
-                      </p>
-                    </div>
+                    <span className="rounded-lg bg-[#8B7D3C]/10 px-2 py-1 text-xs font-bold text-[#8B7D3C]">
+                      {money(total)}
+                    </span>
                   </div>
-                  <span className="rounded-lg bg-[#8B7D3C]/10 px-2 py-1 text-xs font-bold text-[#8B7D3C]">
-                    {money(h.total)}
-                  </span>
+                  <div className="mt-3 flex items-center justify-between border-t border-[var(--scl-border)] pt-3 text-xs text-[var(--scl-text-secondary)]">
+                    <span>Seats: {seats.join(", ")}</span>
+                    <span className="font-mono">{receiptCode}</span>
+                  </div>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-[var(--scl-border)] pt-3 text-xs text-[var(--scl-text-secondary)]">
-                  <span>Seats: {h.seats.join(", ")}</span>
-                  <span className="font-mono">{h.receiptCode}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

@@ -39,25 +39,29 @@ export default function ConfirmationView() {
 
   // Fetch the company's configured receipt template from Supabase
   useEffect(() => {
-    supabase
-      .from("receipt_templates" as never)
-      .select("template_data" as never)
-      .eq("is_default" as never, true)
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data && (data as { template_data?: Record<string, unknown> }).template_data) {
-          const td = (data as { template_data: Record<string, unknown> }).template_data;
-          setCompanyConfig({
-            headerText: (td.headerText as string) || "KANGAROO SHUTTLE",
-            accentColor: (td.accentColor as string) || "#8B7D3C",
-            showLogo: td.showLogo !== false,
-            logoUrl: (td.logoUrl as string) || null,
-            footerText: (td.footerText as string) || "Thank you for traveling with Kangaroo Shuttle!",
-          });
+    const fetchTemplate = async () => {
+      try {
+        const { data } = await supabase
+          .from("receipt_templates" as never)
+          .select("template_data" as never)
+          .eq("is_default" as never, true)
+          .limit(1)
+          .maybeSingle();
+        if (data) {
+          const td = (data as unknown as { template_data?: Record<string, unknown> })?.template_data;
+          if (td) {
+            setCompanyConfig({
+              headerText: (td.headerText as string) || "KANGAROO SHUTTLE",
+              accentColor: (td.accentColor as string) || "#8B7D3C",
+              showLogo: td.showLogo !== false,
+              logoUrl: (td.logoUrl as string) || null,
+              footerText: (td.footerText as string) || "Thank you for traveling with Kangaroo Shuttle!",
+            });
+          }
         }
-      })
-      .catch(() => {});
+      } catch { /* ignore */ }
+    };
+    fetchTemplate();
   }, []);
 
   const receiptCode = `SCL-${Date.now().toString(36).toUpperCase()}`;

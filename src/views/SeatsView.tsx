@@ -337,14 +337,14 @@ export default function SeatsView() {
                       <div className="flex gap-2">
                         {row.seats.slice(0,2).map(n => {
                           const lbl = n===2 ? "1X" : String(n);
-                          return <RealSeat key={n} label={lbl} state={bookedDisplay.has(lbl) ? "booked" : selectedDisplay.has(lbl) ? "selected" : "available"} onClick={() => toggleDisplay(lbl)} variant="single" />
+                          return <RealSeat key={n} label={lbl} state={bookedDisplay.has(lbl) ? "booked" : selectedDisplay.has(lbl) ? "selected" : "available"} onClick={() => toggleDisplay(lbl)} />
                         })}
                       </div>
                       <div className="mx-2 flex h-[52px] w-6 flex-col items-center justify-center"><div className="h-full w-px border-l border-dashed border-[var(--scl-border)]/50" /></div>
                       <div className="flex gap-2">
                         {row.seats.slice(2).map(n => {
                           const lbl = String(n);
-                          return <RealSeat key={n} label={lbl} state={bookedDisplay.has(lbl) ? "booked" : selectedDisplay.has(lbl) ? "selected" : "available"} onClick={() => toggleDisplay(lbl)} variant="single" />
+                          return <RealSeat key={n} label={lbl} state={bookedDisplay.has(lbl) ? "booked" : selectedDisplay.has(lbl) ? "selected" : "available"} onClick={() => toggleDisplay(lbl)} />
                         })}
                       </div>
                     </div>

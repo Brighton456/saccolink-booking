@@ -8,7 +8,7 @@ const tabs = [
   { path: "/search", label: "Search", icon: I.ArrowRight, isCenter: true },
   { path: "/my-tickets", label: "Tickets", icon: I.Ticket },
   { path: "/support", label: "Support", icon: I.Phone },
-] as const;
+];
 
 export default function BottomNav() {
   const location = useLocation();
