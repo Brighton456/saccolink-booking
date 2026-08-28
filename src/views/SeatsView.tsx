@@ -10,11 +10,13 @@ import * as I from "@/icons";
 /* ─── Seat shape component ─── */
 function SeatButton({
   num,
+  label,
   state,
   onClick,
   showLabel,
 }: {
   num: number;
+  label?: string;
   state: "available" | "selected" | "booked";
   onClick: () => void;
   showLabel?: boolean;
@@ -50,7 +52,7 @@ function SeatButton({
           state === "selected" ? "bg-white/40" : state === "booked" ? "bg-gray-300/30" : "bg-[var(--scl-border)]"
         }`}
       />
-      <span className="relative z-10 mt-0.5">{num}</span>
+      <span className="relative z-10 mt-0.5">{label ?? num}</span>
       {showLabel && state !== "booked" && (
         <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-1.5 py-0.5 text-[8px] font-bold text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-white dark:text-gray-900">
           {state === "selected" ? "Deselect" : "Select"}
@@ -100,19 +102,38 @@ export default function SeatsView() {
     });
   };
 
-  /* ─── Layout: 2 front + rows of 3 (like a real van) ─── */
-  const frontSeats = [1, 2];
-  const bodyStart = 3;
-  const bodySeats: number[][] = [];
-  let seatNum = bodyStart;
-  while (seatNum <= capacity) {
-    const rowLen = Math.min(3, capacity - seatNum + 1);
-    bodySeats.push(Array.from({ length: rowLen }, (_, i) => seatNum + i));
-    seatNum += rowLen;
+  /* ─── Layout: parse seat_format or derive from capacity ─── */
+  const vehicle = selectedTrip.trip.vehicles;
+  const seatFormat = (vehicle as any)?.seat_format as string | null;
+  const formatParts = seatFormat ? seatFormat.split(",").map(s => parseInt(s.trim(), 10)).filter(v => !isNaN(v) && v > 0) : [];
+
+  // Build rows from format
+  const layoutRows: (number[] | "driver")[] = [];
+  let seatCounter = 1;
+  if (formatParts.length > 0 && Math.abs(formatParts.reduce((a,b) => a+b, 0) - capacity) <= 2) {
+    formatParts.forEach((rowSize, idx) => {
+      if (idx === 0) {
+        // Cabin: co-driver (1X) + driver
+        layoutRows.push([seatCounter]); // seat 1 = 1X
+        seatCounter += rowSize > 1 ? rowSize - 1 : 0;
+        layoutRows.push("driver");
+      } else {
+        const seats = Array.from({ length: rowSize }, () => seatCounter++);
+        layoutRows.push(seats);
+      }
+    });
+  } else {
+    // Fallback: 2 front + rows of 3
+    layoutRows.push([1]); // 1X
+    layoutRows.push("driver");
+    let sn = 2;
+    while (sn <= capacity) {
+      const rowLen = Math.min(3, capacity - sn + 1);
+      layoutRows.push(Array.from({ length: rowLen }, () => sn++));
+    }
   }
 
-  /* Row labels: A, B, C, ... for body rows */
-  const rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const seatLabel = (n: number) => n === 1 ? "1X" : String(n);
 
   const total = selected.size * selectedTrip.price;
 
@@ -196,79 +217,64 @@ export default function SeatsView() {
               {/* Windshield stripe */}
               <div className="absolute left-3 right-3 top-0 h-6 rounded-b-3xl bg-gradient-to-b from-[#16a34a]/8 to-transparent" />
 
-              {/* Driver area */}
-              <div className="mb-5 flex items-center justify-between px-1">
-                <div className="flex gap-2.5">
-                  {frontSeats.filter((n) => n <= capacity).map((n) => (
-                    <SeatButton
-                      key={n}
-                      num={n}
-                      state={booked.has(n) ? "booked" : selected.has(n) ? "selected" : "available"}
-                      onClick={() => toggle(n)}
-                      showLabel
-                    />
-                  ))}
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed border-[var(--scl-border)] text-[var(--scl-text-secondary)]/25">
-                    <I.Steering className="h-5 w-5" />
-                  </div>
-                  <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]/30">Driver</span>
-                </div>
-              </div>
-
-              {/* Divider line */}
-              <div className="mb-4 flex items-center gap-2">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--scl-border)] to-transparent" />
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[var(--scl-border)]/30">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[var(--scl-border)]" />
-                </div>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--scl-border)] to-transparent" />
-              </div>
-
-              {/* Body rows */}
-              {bodySeats.map((row, ri) => (
-                <div key={ri} className="relative mb-3 flex items-center gap-0 pl-0">
-                  {/* Row label */}
-                  <RowLabel label={rowLabels[ri] || ""} count={row.length} />
-
-                  {/* Left seats */}
-                  <div className="flex gap-2">
-                    {row.slice(0, Math.min(2, row.length)).map((n) => (
-                      <SeatButton
-                        key={n}
-                        num={n}
-                        state={booked.has(n) ? "booked" : selected.has(n) ? "selected" : "available"}
-                        onClick={() => toggle(n)}
-                        showLabel
-                      />
-                    ))}
-                  </div>
-
-                  {/* Aisle */}
-                  <div className="mx-2 flex h-[3.25rem] w-6 flex-col items-center justify-center">
-                    <div className="h-full w-px border-l border-dashed border-[var(--scl-border)]/50" />
-                  </div>
-
-                  {/* Right seats (if row has 3) */}
-                  <div className="flex gap-2">
-                    {row.slice(2).map((n) => (
-                      <SeatButton
-                        key={n}
-                        num={n}
-                        state={booked.has(n) ? "booked" : selected.has(n) ? "selected" : "available"}
-                        onClick={() => toggle(n)}
-                        showLabel
-                      />
-                    ))}
-                    {/* Empty filler if row has < 3 */}
-                    {row.length < 3 &&
-                      Array.from({ length: 3 - row.length }).map((_, i) => (
-                        <div key={`filler-${i}`} className="h-[3.25rem] w-[2.75rem]" />
+              {/* Layout rows */}
+              {layoutRows.map((row, ri) => {
+                if (row === "driver") {
+                  return (
+                    <div key={ri} className="mb-3 flex items-center justify-end px-1">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed border-[var(--scl-border)] text-[var(--scl-text-secondary)]/25">
+                          <I.Steering className="h-5 w-5" />
+                        </div>
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]/30">Driver</span>
+                      </div>
+                    </div>
+                  );
+                }
+                const rowLabel = ri === 0 ? "" : String.fromCharCode(64 + ri); // A, B, C...
+                return (
+                  <div key={ri} className="relative mb-3 flex items-center gap-0 pl-0">
+                    {rowLabel && (
+                      <div className="flex h-[3.25rem] items-center">
+                        <span className="w-5 text-center text-[9px] font-bold uppercase tracking-widest text-[var(--scl-text-secondary)]/40">
+                          {rowLabel}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      {row.slice(0, Math.min(2, row.length)).map((n) => (
+                        <SeatButton
+                          key={n}
+                          num={n}
+                          label={seatLabel(n)}
+                          state={booked.has(n) ? "booked" : selected.has(n) ? "selected" : "available"}
+                          onClick={() => toggle(n)}
+                          showLabel
+                        />
                       ))}
+                    </div>
+                    <div className="mx-2 flex h-[3.25rem] w-6 flex-col items-center justify-center">
+                      <div className="h-full w-px border-l border-dashed border-[var(--scl-border)]/50" />
+                    </div>
+                    <div className="flex gap-2">
+                      {row.slice(2).map((n) => (
+                        <SeatButton
+                          key={n}
+                          num={n}
+                          label={seatLabel(n)}
+                          state={booked.has(n) ? "booked" : selected.has(n) ? "selected" : "available"}
+                          onClick={() => toggle(n)}
+                          showLabel
+                        />
+                      ))}
+                      {row.length < 3 &&
+                        Array.from({ length: Math.max(0, 3 - row.length) }).map((_, i) => (
+                          <div key={`f-${i}`} className="h-[3.25rem] w-[2.75rem]" />
+                        ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {/* Door indicator */}
               <div className="mt-2 flex items-center justify-center gap-2">
