@@ -167,13 +167,11 @@ export default function SeatsView() {
     navigate("/checkout");
   };
 
-  /* 14-seater format "2,3,3,3,3" = 2+3+3+3+3 = 14 seats */
+  /* 14-seater format "2,3,3,3,3" = 2+3+3+3+3 = 14 seats — aisle on left */
   const seats14 = {
     row2: ["4", "3", "2"] as const,
-    row3left: "7",
-    row3right: ["6", "5"] as const,
-    row4left: "10",
-    row4right: ["9", "8"] as const,
+    row3: ["7", "6", "5"] as const,
+    row4: ["10", "9", "8"] as const,
     rear: ["14", "13", "12"] as const,
   };
   /* 16-seater format "2,4,3,3,4" = 2+4+3+3+4 = 16 seats */
@@ -265,7 +263,7 @@ export default function SeatsView() {
 
                 {/* Interior — dynamic grid based on seat count */}
                 {(() => {
-                  const benchCols = is14 ? 3 : 4; // 14-seater: 3 per row, 16-seater: 4 per row
+                  const benchCols = 4;
                   // Removed: middle rows now use same grid-cols-4 as bench
                   return (
                     <div className="px-3 pb-4 pt-1 space-y-2">
@@ -278,13 +276,6 @@ export default function SeatsView() {
 
                       <div className="mx-2 h-px bg-zinc-200" />
 
-                      {/* Row 2 — full bench */}
-                      <div className={`grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
-                        {layout.row2.map((lbl: string) => (
-                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                        ))}
-                      </div>
-
                       {/* Door marker + aisle label */}
                       <div className="flex items-center gap-1 px-1">
                         <div className="h-6 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
@@ -293,26 +284,67 @@ export default function SeatsView() {
                         <div className="flex-1 border-b border-dashed border-zinc-200" />
                       </div>
 
-                      {/* Row 3 — single on left, aisle, pair on right */}
-                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
-                        <div><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                        {benchCols === 4 && <div />}{/* aisle spacer for 4-col grid */}
-                        {layout.row3right.map((lbl: string) => (
+                      {/* Row 2 — full bench */}
+                      <div className={`grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
+                        {is14 && <div />}{/* aisle spacer for 14-seater */}
+                        {layout.row2.map((lbl: string) => (
                           <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
                       </div>
 
-                      {/* Row 4 — single on left, aisle, pair on right */}
+                      {is16 && (
+                        /* 16-seater door marker after Row 2 */
+                        <div className="flex items-center gap-1 px-1">
+                          <div className="h-6 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
+                          <div className="flex-1 border-b border-dashed border-zinc-200" />
+                          <span className="text-[5px] font-bold uppercase tracking-widest text-zinc-300">aisle</span>
+                          <div className="flex-1 border-b border-dashed border-zinc-200" />
+                        </div>
+                      )}
+
+                      {/* Row 3 */}
                       <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
-                        <div><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                        {benchCols === 4 && <div />}{/* aisle spacer for 4-col grid */}
-                        {layout.row4right.map((lbl: string) => (
-                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                        ))}
+                        {is14 ? (
+                          <>{/* 14-seater: aisle spacer + 3 seats */}
+                            <div />{/* aisle spacer */}
+                            {layout.row3.map((lbl: string) => (
+                              <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                            ))}
+                          </>
+                        ) : (
+                          <>{/* 16-seater: single on left, aisle spacer, pair on right */}
+                            <div><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
+                            <div />{/* aisle spacer */}
+                            {layout.row3right.map((lbl: string) => (
+                              <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+
+                      {/* Row 4 */}
+                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
+                        {is14 ? (
+                          <>{/* 14-seater: aisle spacer + 3 seats */}
+                            <div />{/* aisle spacer */}
+                            {layout.row4.map((lbl: string) => (
+                              <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                            ))}
+                          </>
+                        ) : (
+                          <>{/* 16-seater: single on left, aisle spacer, pair on right */}
+                            <div><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
+                            <div />{/* aisle spacer */}
+                            {layout.row4right.map((lbl: string) => (
+                              <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                            ))}
+                          </>
+                        )}
                       </div>
 
                       {/* Rear bench */}
                       <div className={`grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
+                        {is14 && <div />}{/* aisle spacer for 14-seater */}
                         {layout.rear.map((lbl: string) => (
                           <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
