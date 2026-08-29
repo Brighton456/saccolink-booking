@@ -167,19 +167,16 @@ export default function SeatsView() {
     navigate("/checkout");
   };
 
-  /* 14-seater: 1,1X,cabin → 2,3,4,5 → 6,7|8 → 9,10|11 → 12,13,14,15
-     Double seats (6,7,9,10) are wider; singles (8,11) are narrower aisle seats.
-     Image reference: door area between seat 5 and 8, pathway between 7-8 and 10-11 */
+  /* 14-seater format "2,3,3,3,3" = 2+3+3+3+3 = 14 seats */
   const seats14 = {
-    row2: ["5", "4", "3", "2"] as const,
-    row3left: "8",
-    row3right: ["7", "6"] as const,
-    row4left: "11",
-    row4right: ["10", "9"] as const,
-    rear: ["15", "14", "13", "12"] as const,
+    row2: ["4", "3", "2"] as const,
+    row3left: "7",
+    row3right: ["6", "5"] as const,
+    row4left: "10",
+    row4right: ["9", "8"] as const,
+    rear: ["14", "13", "12"] as const,
   };
-  /* 16-seater: 1,1X,cabin → 2,3,4,5 → 6,7|8 → 9,10|11 → 12,13,14,15
-     Format "2,4,3,3,4" = 2+4+3+3+4 = 16 passenger seats */
+  /* 16-seater format "2,4,3,3,4" = 2+4+3+3+4 = 16 seats */
   const seats16 = {
     row2: ["5", "4", "3", "2"] as const,
     row3left: "8",
@@ -268,7 +265,7 @@ export default function SeatsView() {
 
                 {/* Interior — dynamic grid based on seat count */}
                 {(() => {
-                  const benchCols = 4; // both 14 and 16 seater have 4 seats per bench row
+                  const benchCols = is14 ? 3 : 4; // 14-seater: 3 per row, 16-seater: 4 per row
                   // Removed: middle rows now use same grid-cols-4 as bench
                   return (
                     <div className="px-3 pb-4 pt-1 space-y-2">
@@ -296,8 +293,8 @@ export default function SeatsView() {
                         <div className="flex-1 border-b border-dashed border-zinc-200" />
                       </div>
 
-                      {/* Row 3 — same 4-col grid as bench, aisle in col 2 */}
-                      <div className="grid grid-cols-4 gap-1.5 items-center">
+                      {/* Row 3 — same grid as bench, aisle in col 2 */}
+                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
                         <div><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
                         <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l-2 border-dashed border-zinc-300/40" /></div>
                         {layout.row3right.map((lbl: string) => (
@@ -306,7 +303,7 @@ export default function SeatsView() {
                       </div>
 
                       {/* Row 4 — same pattern */}
-                      <div className="grid grid-cols-4 gap-1.5 items-center">
+                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
                         <div><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
                         <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l-2 border-dashed border-zinc-300/40" /></div>
                         {layout.row4right.map((lbl: string) => (
