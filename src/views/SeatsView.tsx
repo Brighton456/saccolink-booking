@@ -293,19 +293,21 @@ export default function SeatsView() {
                         <div className="flex-1 border-b border-dashed border-zinc-200" />
                       </div>
 
-                      {/* Row 3 — benchCols grid, aisle = left border on 2nd seat */}
+                      {/* Row 3 — single on left, aisle, pair on right */}
                       <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
                         <div><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                        {layout.row3right.map((lbl: string, i: number) => (
-                          <div key={lbl} className={i === 0 ? "border-l-2 border-dashed border-zinc-300/40" : ""}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        <div /> {/* aisle spacer */}
+                        {layout.row3right.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
                       </div>
 
-                      {/* Row 4 — same pattern */}
+                      {/* Row 4 — single on left, aisle, pair on right */}
                       <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
                         <div><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                        {layout.row4right.map((lbl: string, i: number) => (
-                          <div key={lbl} className={i === 0 ? "border-l-2 border-dashed border-zinc-300/40" : ""}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        <div /> {/* aisle spacer */}
+                        {layout.row4right.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
                       </div>
 
