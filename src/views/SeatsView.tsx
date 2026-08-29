@@ -43,17 +43,17 @@ function RealSeat({
   if (state === "booked") {
     return (
       <div
-        className={`${w} relative cursor-not-allowed opacity-50`}
+        className={`${w} relative cursor-not-allowed`}
         title={`Seat ${label} — Booked`}
       >
-        <div className="relative flex flex-col items-center rounded-t-2xl rounded-b-xl border-2 border-zinc-300 bg-zinc-100 px-1 pt-2 pb-1.5">
+        <div className="relative flex flex-col items-center rounded-t-2xl rounded-b-xl border-2 border-red-300/60 bg-red-50/80 px-1 pt-2 pb-1.5 opacity-60">
           {/* Headrest */}
-          <div className="mb-1 h-2 w-[65%] rounded-t-lg bg-zinc-300" />
+          <div className="mb-1 h-2 w-[65%] rounded-t-lg bg-red-300/50" />
           {/* Backrest */}
-          <div className="mb-1 h-4 w-[85%] rounded-md border border-zinc-300 bg-zinc-200" />
-          {/* Seat cushion with number */}
-          <div className="flex h-6 w-full items-center justify-center rounded-b-lg border-2 border-zinc-300 bg-zinc-200">
-            <span className="text-[10px] font-extrabold text-zinc-400">{label}</span>
+          <div className="mb-1 h-4 w-[85%] rounded-md border border-red-300/40 bg-red-200/40" />
+          {/* Seat cushion with number + X mark */}
+          <div className="flex h-6 w-full items-center justify-center rounded-b-lg border-2 border-red-300/50 bg-red-200/50">
+            <span className="text-[10px] font-extrabold text-red-400 line-through">{label}</span>
           </div>
         </div>
       </div>
@@ -288,26 +288,26 @@ export default function SeatsView() {
                     <div className="flex-1 border-b border-dashed border-zinc-200" />
                   </div>
 
-                  {/* Row 3 — left single (narrow) + right double (wide) with aisle */}
-                  <div className="flex items-stretch gap-1 px-1">
-                    <div className="w-[24%]"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                    <div className="flex w-[6%] flex-col items-center justify-center gap-0.5">
+                  {/* Row 3 — single left + aisle + double right */}
+                  <div className="flex items-stretch gap-0 px-1">
+                    <div className="flex-1"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
+                    <div className="mx-1 flex w-4 flex-col items-center justify-center">
                       <div className="h-full w-px border-l border-dashed border-zinc-300" />
                     </div>
-                    <div className="flex flex-1 gap-1.5">
+                    <div className="flex-[2] flex gap-1.5">
                       {layout.row3right.map((lbl: string) => (
                         <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
                     </div>
                   </div>
 
-                  {/* Row 4 — left single (narrow) + right double (wide) with aisle */}
-                  <div className="flex items-stretch gap-1 px-1">
-                    <div className="w-[24%]"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                    <div className="flex w-[6%] flex-col items-center justify-center gap-0.5">
+                  {/* Row 4 — single left + aisle + double right */}
+                  <div className="flex items-stretch gap-0 px-1">
+                    <div className="flex-1"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
+                    <div className="mx-1 flex w-4 flex-col items-center justify-center">
                       <div className="h-full w-px border-l border-dashed border-zinc-300" />
                     </div>
-                    <div className="flex flex-1 gap-1.5">
+                    <div className="flex-[2] flex gap-1.5">
                       {layout.row4right.map((lbl: string) => (
                         <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
@@ -366,9 +366,9 @@ export default function SeatsView() {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 rounded-2xl bg-[var(--scl-surface-alt)] px-5 py-3">
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-zinc-300 bg-[#e8eaed]" /><span className="text-[10px] font-bold text-[var(--scl-text-secondary)]">Available</span></div>
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-amber-400 bg-amber-400" /><span className="text-[10px] font-bold text-amber-600">Selected ({selectedDisplay.size})</span></div>
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-zinc-300 bg-zinc-200 opacity-60" /><span className="text-[10px] font-bold text-[var(--scl-text-secondary)]">Booked</span></div>
+            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-[#8B7D3C]/25 bg-white" /><span className="text-[10px] font-bold text-[var(--scl-text-secondary)]">Available</span></div>
+            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-[#B8A94E] bg-[#B8A94E]" /><span className="text-[10px] font-bold text-amber-600">Selected ({selectedDisplay.size})</span></div>
+            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-red-300/60 bg-red-100/80 opacity-60" /><span className="text-[10px] font-bold text-red-400">Booked</span></div>
           </div>
 
           {selectedDisplay.size > 0 && (
