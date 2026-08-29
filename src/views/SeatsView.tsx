@@ -105,9 +105,9 @@ export default function SeatsView() {
 
   const capacity = selectedTrip.trip.vehicles?.capacity ?? 14;
   const vehicle = selectedTrip.trip.vehicles;
-  const seatFormat = (vehicle as any)?.seat_format as string | null;
-  const is14 = seatFormat === "2,3,3,3,3" || (!seatFormat && capacity === 14);
-  const is16 = seatFormat === "2,4,3,3,4" || (!seatFormat && capacity === 16);
+  const seatFormat = ((vehicle as any)?.seat_format as string | null)?.replace(/\s/g, "");
+  const is14 = seatFormat?.startsWith("2,3,3,3") || (!seatFormat && (capacity >= 13 && capacity <= 15));
+  const is16 = seatFormat?.startsWith("2,4,3,3") || (!seatFormat && (capacity >= 16 && capacity <= 18));
   const isRealistic = is14 || is16;
 
   // Booked sets - tickets store internal seat_no. Convert to display for comparison when realistic
@@ -265,60 +265,66 @@ export default function SeatsView() {
                   <div className="absolute right-[6px] top-[3px] h-5 w-1.5 rounded-r-sm bg-sky-200/60" />
                 </div>
 
-                {/* Interior — uniform 4-col grid for ALL rows */}
-                <div className="px-3 pb-4 pt-1 space-y-2">
-                  {/* Cabin row: 1 | 1X | Driver */}
-                  <div className="grid grid-cols-[1fr_1fr_42px] gap-1.5 items-end">
-                    <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} />
-                    <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} />
-                    <DriverIcon />
-                  </div>
+                {/* Interior — dynamic grid based on seat count */}
+                {(() => {
+                  const benchCols = is14 ? 4 : 5;
+                  const aisleCols = is14 ? "0.8fr_12px_1fr_1fr" : "0.8fr_12px_1fr_1fr_1fr";
+                  return (
+                    <div className="px-3 pb-4 pt-1 space-y-2">
+                      {/* Cabin row: 1 | 1X | Driver */}
+                      <div className="grid grid-cols-[1fr_1fr_42px] gap-1.5 items-end">
+                        <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} />
+                        <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} />
+                        <DriverIcon />
+                      </div>
 
-                  <div className="mx-2 h-px bg-zinc-200" />
+                      <div className="mx-2 h-px bg-zinc-200" />
 
-                  {/* Row 2 — full bench (4 seats, grid) */}
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {layout.row2.map((lbl: string) => (
-                      <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
-                  </div>
+                      {/* Row 2 — full bench */}
+                      <div className={`grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
+                        {layout.row2.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        ))}
+                      </div>
 
-                  {/* Door marker + aisle label */}
-                  <div className="flex items-center gap-1 px-1">
-                    <div className="h-6 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
-                    <div className="flex-1 border-b border-dashed border-zinc-200" />
-                    <span className="text-[5px] font-bold uppercase tracking-widest text-zinc-300">aisle</span>
-                    <div className="flex-1 border-b border-dashed border-zinc-200" />
-                  </div>
+                      {/* Door marker + aisle label */}
+                      <div className="flex items-center gap-1 px-1">
+                        <div className="h-6 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
+                        <div className="flex-1 border-b border-dashed border-zinc-200" />
+                        <span className="text-[5px] font-bold uppercase tracking-widest text-zinc-300">aisle</span>
+                        <div className="flex-1 border-b border-dashed border-zinc-200" />
+                      </div>
 
-                  {/* Row 3 — [8] [aisle] [7] [6] */}
-                  <div className="grid grid-cols-[0.8fr_12px_1fr_1fr] gap-1.5 items-center">
-                    <div className="flex justify-center"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} compact /></div>
-                    <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
-                    {layout.row3right.map((lbl: string) => (
-                      <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
-                  </div>
+                      {/* Row 3 — [left] [aisle] [right...] */}
+                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: aisleCols }}>
+                        <div className="flex justify-center"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} compact /></div>
+                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
+                        {layout.row3right.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        ))}
+                      </div>
 
-                  {/* Row 4 — [11] [aisle] [10] [9] */}
-                  <div className="grid grid-cols-[0.8fr_12px_1fr_1fr] gap-1.5 items-center">
-                    <div className="flex justify-center"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} compact /></div>
-                    <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
-                    {layout.row4right.map((lbl: string) => (
-                      <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
-                  </div>
+                      {/* Row 4 — [left] [aisle] [right...] */}
+                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: aisleCols }}>
+                        <div className="flex justify-center"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} compact /></div>
+                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
+                        {layout.row4right.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        ))}
+                      </div>
 
-                  {/* Rear bench — 4 seats */}
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {layout.rear.map((lbl: string) => (
-                      <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
-                  </div>
+                      {/* Rear bench */}
+                      <div className={`grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${benchCols}, minmax(0, 1fr))` }}>
+                        {layout.rear.map((lbl: string) => (
+                          <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                        ))}
+                      </div>
 
-                  {/* Rear window */}
-                  <div className="mx-8 mt-1 h-3 rounded-b-lg border-2 border-t-0 border-zinc-200 bg-sky-50/40" />
-                </div>
+                      {/* Rear window */}
+                      <div className="mx-8 mt-1 h-3 rounded-b-lg border-2 border-t-0 border-zinc-200 bg-sky-50/40" />
+                    </div>
+                  );
+                })()}
               </div>
             ) : (
               /* Fallback generic 2+aisle layout for other capacities */
