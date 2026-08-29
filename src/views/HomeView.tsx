@@ -5,6 +5,7 @@ import { today } from "@/lib/utils";
 import { useHaptic, useCountdown } from "@/lib/hooks";
 import { playClick } from "@/lib/sounds";
 import { SkeletonHome } from "@/components/SkeletonLoader";
+import { resolveStationAlias } from "@/lib/station-aliases";
 import * as I from "@/icons";
 
 function AutoDrop({ items, value, onSelect, show }: { items: string[]; value: string; onSelect: (v: string) => void; show: boolean }) {
@@ -77,8 +78,32 @@ export default function HomeView() {
       .map((r) => `${r.origin} → ${r.destination}`);
     return [...new Set([...routeNames, ...stationNames])].sort();
   }, [stations, allRoutes]);
-  const filteredOrigin = useMemo(() => names.filter((n) => n.toLowerCase().includes(origin.toLowerCase())), [names, origin]);
-  const filteredDest = useMemo(() => names.filter((n) => n.toLowerCase().includes(destination.toLowerCase())), [names, destination]);
+  /* Also show common aliases in dropdown (e.g. "kitale club → Kitale") */
+  const aliasSuggestions = useMemo(() => {
+    const aliases: Record<string, string> = {
+      "kitale club": "Kitale", "kitale stage": "Kitale", "ktl": "Kitale",
+      "eldoret stage": "Eldoret", "eld": "Eldoret",
+      "nakuru stage": "Nakuru", "nakuru bus park": "Nakuru",
+      "nairobi stage": "Nairobi", "nbi": "Nairobi", "city": "Nairobi",
+      "kisumu stage": "Kisumu", "thika stage": "Thika",
+    };
+    const stationSet = new Set(stations.map((s) => s.name.toLowerCase()));
+    return Object.entries(aliases)
+      .filter(([, canonical]) => stationSet.has(canonical.toLowerCase()))
+      .map(([alias, canonical]) => ({ label: `${alias} → ${canonical}`, target: canonical }));
+  }, [stations]);
+  const filteredOrigin = useMemo(() => {
+    const l = origin.toLowerCase();
+    const fromStations = names.filter((n) => n.toLowerCase().includes(l));
+    const fromAliases = aliasSuggestions.filter((a) => a.label.toLowerCase().includes(l));
+    return [...fromAliases.map((a) => a.label), ...fromStations].slice(0, 15);
+  }, [names, aliasSuggestions, origin]);
+  const filteredDest = useMemo(() => {
+    const l = destination.toLowerCase();
+    const fromStations = names.filter((n) => n.toLowerCase().includes(l));
+    const fromAliases = aliasSuggestions.filter((a) => a.label.toLowerCase().includes(l));
+    return [...fromAliases.map((a) => a.label), ...fromStations].slice(0, 15);
+  }, [names, aliasSuggestions, destination]);
 
   const swap = useCallback(() => {
     haptic("tap");
@@ -86,6 +111,8 @@ export default function HomeView() {
     setOrigin(destination);
     setDestination(origin);
   }, [origin, destination, haptic]);
+
+  const stationNames = useMemo(() => stations.map((s) => s.name), [stations]);
 
   const search = useCallback(() => {
     if (!origin || !destination || !date) {
@@ -96,9 +123,14 @@ export default function HomeView() {
     haptic("tap");
     playClick();
     setError("");
-    handleSearch({ origin, destination, date });
+    /* Resolve aliases: "KiTAle" → "Kitale", "Nakuru stage" → "Nakuru" */
+    const resolvedOrigin = resolveStationAlias(origin, stationNames);
+    const resolvedDest = resolveStationAlias(destination, stationNames);
+    setOrigin(resolvedOrigin);
+    setDestination(resolvedDest);
+    handleSearch({ origin: resolvedOrigin, destination: resolvedDest, date });
     navigate("/results");
-  }, [origin, destination, date, haptic, handleSearch, navigate]);
+  }, [origin, destination, date, haptic, handleSearch, navigate, stationNames]);
 
   const useFavorite = useCallback((fav: { origin: string; destination: string }) => {
     haptic("tap");
@@ -187,9 +219,15 @@ export default function HomeView() {
                     </div>
                     <AutoDrop items={filteredOrigin} value={origin} onSelect={(v) => {
                       if (v.includes(" → ")) {
-                        const [o, d] = v.split(" → ");
-                        setOrigin(o?.trim() ?? "");
-                        setDestination(d?.trim() ?? "");
+                        /* Check if it's an alias like "kitale club → Kitale" */
+                        const aliasMatch = aliasSuggestions.find((a) => a.label === v);
+                        if (aliasMatch) {
+                          setOrigin(aliasMatch.target);
+                        } else {
+                          const [o, d] = v.split(" → ");
+                          setOrigin(o?.trim() ?? "");
+                          setDestination(d?.trim() ?? "");
+                        }
                       } else {
                         setOrigin(v);
                       }
@@ -222,9 +260,14 @@ export default function HomeView() {
                     </div>
                     <AutoDrop items={filteredDest} value={destination} onSelect={(v) => {
                       if (v.includes(" → ")) {
-                        const [o, d] = v.split(" → ");
-                        setOrigin(o?.trim() ?? "");
-                        setDestination(d?.trim() ?? "");
+                        const aliasMatch = aliasSuggestions.find((a) => a.label === v);
+                        if (aliasMatch) {
+                          setDestination(aliasMatch.target);
+                        } else {
+                          const [o, d] = v.split(" → ");
+                          setOrigin(o?.trim() ?? "");
+                          setDestination(d?.trim() ?? "");
+                        }
                       } else {
                         setDestination(v);
                       }

@@ -174,21 +174,25 @@ export default function SeatsView() {
     navigate("/checkout");
   };
 
+  /* 14-seater: 1,1X,cabin → 2,3,4,5 → 6,7|8 → 9,10|11 → 12,13,14,15
+     Double seats (6,7,9,10) are wider; singles (8,11) are narrower aisle seats.
+     Image reference: door area between seat 5 and 8, pathway between 7-8 and 10-11 */
   const seats14 = {
-    row2: ["4", "3", "2"] as const,
-    row3left: "7",
-    row3right: ["6", "5"] as const,
-    row4left: "10",
-    row4right: ["9", "8"] as const,
-    rear: ["13", "12", "11"] as const,
-  };
-  const seats16 = {
     row2: ["5", "4", "3", "2"] as const,
     row3left: "8",
     row3right: ["7", "6"] as const,
     row4left: "11",
     row4right: ["10", "9"] as const,
     rear: ["15", "14", "13", "12"] as const,
+  };
+  /* 16-seater: 1,1X,cabin → 2,3,4,5,6 → 7,8|9 → 10,11|12 → 13,14,15,16,17 */
+  const seats16 = {
+    row2: ["6", "5", "4", "3", "2"] as const,
+    row3left: "9",
+    row3right: ["8", "7"] as const,
+    row4left: "12",
+    row4right: ["11", "10"] as const,
+    rear: ["17", "16", "15", "14", "13"] as const,
   };
   const layout: any = is14 ? seats14 : is16 ? seats16 : null;
 
@@ -269,42 +273,49 @@ export default function SeatsView() {
 
                   <div className="mx-2 h-px bg-zinc-200" />
 
-                  {/* Row 2 — full bench */}
-                  <div className="flex gap-2 px-1">
+                  {/* Row 2 — full bench (front passenger row) */}
+                  <div className="flex gap-1.5 px-1">
                     {layout.row2.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
                   </div>
 
-                  {/* Sliding door indicator */}
-                  <div className="absolute -left-[3px] flex h-10 w-1.5 items-center justify-center rounded-r-sm bg-amber-400/70 border border-amber-300">
-                    <span className="text-[5px] font-bold text-amber-700 [writing-mode:vertical-rl] rotate-180">DOOR</span>
+                  {/* Door / pathway marker */}
+                  <div className="flex items-center gap-1 px-1">
+                    <div className="h-8 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
+                    <div className="flex-1 border-b border-dashed border-zinc-200" />
+                    <span className="text-[6px] font-bold uppercase tracking-widest text-zinc-300">aisle</span>
+                    <div className="flex-1 border-b border-dashed border-zinc-200" />
                   </div>
 
-                  {/* Row 3 — left single + right double with aisle */}
-                  <div className="flex gap-1.5 px-1">
-                    <div className="w-[28%]"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                    <div className="flex w-[4%] items-center justify-center"><div className="h-full w-px border-l border-dashed border-zinc-300" /></div>
-                    <div className="flex flex-1 gap-2">
+                  {/* Row 3 — left single (narrow) + right double (wide) with aisle */}
+                  <div className="flex items-stretch gap-1 px-1">
+                    <div className="w-[24%]"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
+                    <div className="flex w-[6%] flex-col items-center justify-center gap-0.5">
+                      <div className="h-full w-px border-l border-dashed border-zinc-300" />
+                    </div>
+                    <div className="flex flex-1 gap-1.5">
                       {layout.row3right.map((lbl: string) => (
                         <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
                     </div>
                   </div>
 
-                  {/* Row 4 */}
-                  <div className="flex gap-1.5 px-1">
-                    <div className="w-[28%]"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                    <div className="flex w-[4%] items-center justify-center"><div className="h-full w-px border-l border-dashed border-zinc-300" /></div>
-                    <div className="flex flex-1 gap-2">
+                  {/* Row 4 — left single (narrow) + right double (wide) with aisle */}
+                  <div className="flex items-stretch gap-1 px-1">
+                    <div className="w-[24%]"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
+                    <div className="flex w-[6%] flex-col items-center justify-center gap-0.5">
+                      <div className="h-full w-px border-l border-dashed border-zinc-300" />
+                    </div>
+                    <div className="flex flex-1 gap-1.5">
                       {layout.row4right.map((lbl: string) => (
                         <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                       ))}
                     </div>
                   </div>
 
-                  {/* Rear bench */}
-                  <div className="flex gap-2 px-1">
+                  {/* Rear bench — full width */}
+                  <div className="flex gap-1.5 px-1">
                     {layout.rear.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}

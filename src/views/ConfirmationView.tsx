@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBooking } from "@/context/BookingContext";
 import { money, timeOf } from "@/lib/utils";
@@ -36,6 +36,36 @@ export default function ConfirmationView() {
 
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [companyConfig, setCompanyConfig] = useState<CompanyReceiptConfig | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent));
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  /* Auto-show receipt after a brief delay so the user sees success first */
+  useEffect(() => {
+    const t = setTimeout(() => setShowReceiptPreview(true), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  const receiptData = useCallback((): ReceiptData => ({
+    code: receiptCode,
+    seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
+    name: (booking as Record<string, unknown>).name as string ?? "—",
+    phone: (booking as Record<string, unknown>).phone as string ?? null,
+    fare: selectedTrip.price * selectedSeats.length,
+    method: (booking as Record<string, unknown>).method as string ?? "mpesa",
+    route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
+    origin: selectedTrip.trip.routes?.origin ?? "—",
+    destination: selectedTrip.trip.routes?.destination ?? "—",
+    vehiclePlate: selectedTrip.plate,
+    departureTime: selectedTrip.departure,
+    date: tripDate,
+    saccoName: selectedTrip.saccoName,
+  }), [receiptCode, selectedSeats, booking, selectedTrip, tripDate]);
 
   // Fetch the company's configured receipt template from Supabase
   useEffect(() => {
@@ -177,35 +207,11 @@ export default function ConfirmationView() {
             onClick={() => {
               haptic("tap");
               playClick();
-              setShowReceiptPreview(true);
+              printBookingReceipt(receiptData(), companyConfig);
             }}
-            className="w-full rounded-2xl border-2 border-[#8B7D3C]/30 bg-[#8B7D3C]/5 py-3.5 text-sm font-bold text-[#8B7D3C] transition hover:border-[#8B7D3C]/60 hover:bg-[#8B7D3C]/10"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-[#8B7D3C]/30 bg-[#8B7D3C]/5 py-3.5 text-sm font-bold text-[#8B7D3C] transition hover:border-[#8B7D3C]/60 hover:bg-[#8B7D3C]/10"
           >
-            👁 Preview Receipt
-          </button>
-          <button
-            onClick={() => {
-              haptic("tap");
-              playClick();
-              printBookingReceipt({
-                code: receiptCode,
-                seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
-                name: (booking as Record<string, unknown>).name as string ?? "—",
-                phone: (booking as Record<string, unknown>).phone as string ?? null,
-                fare: selectedTrip.price * selectedSeats.length,
-                method: (booking as Record<string, unknown>).method as string ?? "mpesa",
-                route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
-                origin: selectedTrip.trip.routes?.origin ?? "—",
-                destination: selectedTrip.trip.routes?.destination ?? "—",
-                vehiclePlate: selectedTrip.plate,
-                departureTime: selectedTrip.departure,
-                date: tripDate,
-                saccoName: selectedTrip.saccoName,
-              }, companyConfig);
-            }}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--scl-border)] bg-[var(--scl-card)] py-3.5 text-sm font-bold text-[var(--scl-text)] transition hover:border-[#8B7D3C]/30"
-          >
-            🖨 Print Receipt
+            {isMobile ? "📥 Download Receipt" : "🖨 Print Receipt"}
           </button>
           <button
             onClick={handleDone}
@@ -218,7 +224,8 @@ export default function ConfirmationView() {
         {/* Support */}
         <div className="mt-6 rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 text-center">
           <p className="text-xs text-[var(--scl-text-secondary)]">Need help?</p>
-          <p className="mt-1 text-sm font-bold text-[#8B7D3C]">📞 0720 363 215</p>
+          <p className="mt-1 text-xs font-bold text-[#8B7D3C]">Kitale: 0728944406 · Eldoret: 0727698996</p>
+          <p className="text-xs font-bold text-[#8B7D3C]">Nakuru: 0727360080</p>
         </div>
       </div>
 
@@ -270,25 +277,11 @@ export default function ConfirmationView() {
               <button
                 onClick={() => {
                   setShowReceiptPreview(false);
-                  printBookingReceipt({
-                    code: receiptCode,
-                    seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
-                    name: (booking as Record<string, unknown>).name as string ?? "—",
-                    phone: (booking as Record<string, unknown>).phone as string ?? null,
-                    fare: selectedTrip.price * selectedSeats.length,
-                    method: (booking as Record<string, unknown>).method as string ?? "mpesa",
-                    route: `${selectedTrip.trip.routes?.origin ?? "—"} → ${selectedTrip.trip.routes?.destination ?? "—"}`,
-                    origin: selectedTrip.trip.routes?.origin ?? "—",
-                    destination: selectedTrip.trip.routes?.destination ?? "—",
-                    vehiclePlate: selectedTrip.plate,
-                    departureTime: selectedTrip.departure,
-                    date: tripDate,
-                    saccoName: selectedTrip.saccoName,
-                  });
+                  printBookingReceipt(receiptData(), companyConfig);
                 }}
                 className="flex-1 rounded-xl bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] py-3 text-sm font-bold text-white shadow-lg shadow-[#8B7D3C]/25 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                🖨 Print Receipt
+                {isMobile ? "📥 Download" : "🖨 Print"}
               </button>
             </div>
           </div>
