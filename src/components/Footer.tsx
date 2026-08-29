@@ -52,18 +52,19 @@ export default function Footer() {
               <li className="flex items-center gap-3">
                 <div className="rounded-lg bg-[#8B7D3C]/20 p-2 text-[#B8A94E]"><I.Phone className="h-5 w-5" /></div>
                 <div>
-                  <p className="font-bold text-white">0720 363 215</p>
-                  <p className="text-xs text-gray-500">Call / WhatsApp</p>
+                  <p className="font-bold text-white">Kitale: 0728944406</p>
+                  <p className="font-bold text-white">Eldoret: 0727698996</p>
+                  <p className="font-bold text-white">Nakuru: 0727360080</p>
                 </div>
               </li>
               <li className="flex items-center gap-3">
                 <div className="rounded-lg bg-gray-800 p-2 text-[#B8A94E]"><I.Headphones className="h-5 w-5" /></div>
-                support@saccolink.co.ke
+                kangarooshuttle@yahoo.com
               </li>
             </ul>
             <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">24/7 Support</p>
-              <p className="mt-1 text-xs text-gray-400">We're here to help with bookings, payments, and parcels.</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">PIN: P051319837M</p>
+              <p className="mt-1 text-xs text-gray-400">Kangaroo Shuttle LTD — NTSA Licensed</p>
             </div>
           </div>
         </div>

@@ -25,8 +25,8 @@ export default function ResultsView() {
 
   const results = useMemo<SearchResult[]>(() => {
     if (!searchParams) return [];
-    const originStation = stations.find((s) => s.name.toLowerCase().includes(searchParams.origin.toLowerCase()));
-    const destStation = stations.find((s) => s.name.toLowerCase().includes(searchParams.destination.toLowerCase()));
+    const searchOrigin = searchParams.origin.toLowerCase();
+    const searchDest = searchParams.destination.toLowerCase();
 
     const now = new Date();
     return allTrips
@@ -38,17 +38,47 @@ export default function ResultsView() {
         const soldCount = tickets.filter((tk) => tk.trip_id === trip.id).length;
         let fare = route?.standard_fare ?? 0;
         let routePasses = false;
-        if (originStation && destStation && route) {
-          const stops = routeStops.filter((rs) => rs.route_id === route.id).sort((a, b) => a.sequence_no - b.sequence_no);
-          const origIdx = stops.findIndex((s) => s.station_id === originStation.id);
-          const destIdx = stops.findIndex((s) => s.station_id === destStation.id);
-          if (origIdx >= 0 && destIdx >= 0 && destIdx > origIdx) {
-            routePasses = true;
-            const origCum = stops[origIdx]?.cumulative_fare ?? 0;
-            const destCum = stops[destIdx]?.cumulative_fare ?? 0;
-            fare = destCum - origCum;
+
+        if (!route) return { trip, departure: timeOf(trip.scheduled_at), arrival: "—", availableSeats: 0, vehicleType: "", plate: "", saccoName: "", price: 0, routePasses: false };
+
+        const routeOrigin = (route.origin ?? "").toLowerCase();
+        const routeDest = (route.destination ?? "").toLowerCase();
+
+        /* Strategy 1: Direct route match — user typed origin/destination that matches route endpoints */
+        const directMatch = (
+          (routeOrigin.includes(searchOrigin) || searchOrigin.includes(routeOrigin)) &&
+          (routeDest.includes(searchDest) || searchDest.includes(routeDest))
+        );
+        /* Also handle reversed input */
+        const reverseMatch = (
+          (routeOrigin.includes(searchDest) || searchDest.includes(routeOrigin)) &&
+          (routeDest.includes(searchOrigin) || searchOrigin.includes(routeDest))
+        );
+
+        if (directMatch) {
+          routePasses = true;
+          fare = route?.standard_fare ?? 0;
+        } else if (reverseMatch) {
+          /* User searched backwards — skip this trip */
+          routePasses = false;
+        }
+
+        /* Strategy 2: Try route_stops for segment fare */
+        if (routePasses) {
+          const originStation = stations.find((s) => s.name.toLowerCase().includes(searchOrigin));
+          const destStation = stations.find((s) => s.name.toLowerCase().includes(searchDest));
+          if (originStation && destStation) {
+            const stops = routeStops.filter((rs) => rs.route_id === route.id).sort((a, b) => a.sequence_no - b.sequence_no);
+            const origIdx = stops.findIndex((s) => s.station_id === originStation.id);
+            const destIdx = stops.findIndex((s) => s.station_id === destStation.id);
+            if (origIdx >= 0 && destIdx >= 0 && destIdx > origIdx) {
+              const origCum = stops[origIdx]?.cumulative_fare ?? 0;
+              const destCum = stops[destIdx]?.cumulative_fare ?? 0;
+              if (destCum > origCum) fare = destCum - origCum;
+            }
           }
         }
+
         return {
           trip, departure: timeOf(trip.scheduled_at), arrival: "—",
           availableSeats: capacity - soldCount, vehicleType: `${capacity}-Seater`,
@@ -177,35 +207,36 @@ export default function ResultsView() {
 
                   <div className="flex-1">
                     <div className="mb-3 flex flex-wrap items-center gap-2">
-                      <span className="rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white dark:bg-white dark:text-gray-900">
+                      <img src="/kangaroo-logo.png" alt="" className="h-5 w-auto" />
+                      <span className="rounded-lg bg-gray-900 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white dark:bg-white dark:text-gray-900">
                         {sr.vehicleType}
                       </span>
-                      <span className="text-xs font-medium text-[var(--scl-text-secondary)]">
+                      <span className="text-[10px] font-medium text-[var(--scl-text-secondary)]">
                         {sr.saccoName} · {sr.plate}
                       </span>
                       <NextDeparture scheduledAt={sr.trip.scheduled_at} />
                     </div>
                     <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-3">
                       <div>
-                        <p className="text-xl font-extrabold text-[var(--scl-text)]">{sr.departure}</p>
-                        <p className="mt-0.5 text-xs font-semibold text-[var(--scl-text-secondary)]">{searchParams.origin}</p>
+                        <p className="text-lg font-extrabold text-[var(--scl-text)]">{sr.departure}</p>
+                        <p className="mt-0.5 text-[10px] font-semibold text-[var(--scl-text-secondary)]">{searchParams.origin}</p>
                       </div>
                       <div className="flex flex-col items-center px-2">
                         <div className="relative flex w-full items-center justify-center border-t-2 border-dashed border-[var(--scl-border)]">
-                          <div className="absolute rounded-full bg-[var(--scl-card)] px-2 text-[#8B7D3C]"><I.Bus className="h-5 w-5" /></div>
+                          <div className="absolute rounded-full bg-[var(--scl-card)] px-2 text-[#8B7D3C]"><I.Bus className="h-4 w-4" /></div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-xl font-extrabold text-[var(--scl-text)]">{sr.arrival}</p>
-                        <p className="mt-0.5 text-xs font-semibold text-[var(--scl-text-secondary)]">{searchParams.destination}</p>
+                        <p className="text-lg font-extrabold text-[var(--scl-text)]">{sr.arrival}</p>
+                        <p className="mt-0.5 text-[10px] font-semibold text-[var(--scl-text-secondary)]">{searchParams.destination}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-row items-center justify-between gap-4 border-t border-[var(--scl-border)] pt-4 md:border-l md:border-t-0 md:pl-6 md:pt-0">
                     <div className="text-left md:text-right">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Fare</p>
-                      <p className="text-2xl font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Fare</p>
+                      <p className="text-xl font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
                       <p className={`mt-1 text-[11px] font-bold ${sr.availableSeats <= 4 ? "rounded-lg bg-red-50 px-2 py-0.5 text-red-500 dark:bg-red-950/50 dark:text-red-400" : "text-[#8B7D3C]"}`}>
                         {sr.availableSeats} seats left
                       </p>

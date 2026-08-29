@@ -42,11 +42,11 @@ export default function TopNav() {
           <button onClick={toggleDarkMode} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)] transition hover:bg-[var(--scl-border)]">
             {darkMode ? "☀️" : "🌙"}
           </button>
-          <button onClick={() => setShowLogin(true)} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] transition hover:bg-[var(--scl-border)]">
+          <button onClick={() => setShowLogin(true)} className="haptic-tap flex items-center gap-1.5 rounded-xl border border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-3 py-1.5 transition hover:border-[#8B7D3C]/30 hover:bg-[#8B7D3C]/5">
             {passenger ? (
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#8B7D3C] text-[10px] font-bold text-white">{passenger.name.charAt(0).toUpperCase()}</span>
             ) : (
-              <I.Phone className="h-4 w-4 text-[var(--scl-text-secondary)]" />
+              <><I.User className="h-4 w-4 text-[#8B7D3C]" /><span className="text-xs font-semibold text-[#8B7D3C]">Sign In</span></>
             )}
           </button>
         </div>
@@ -56,11 +56,11 @@ export default function TopNav() {
           <button onClick={toggleDarkMode} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] text-sm transition hover:bg-[var(--scl-border)]">
             {darkMode ? "☀️" : "🌙"}
           </button>
-          <button onClick={() => setShowLogin(true)} className="haptic-tap flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--scl-surface-alt)] transition hover:bg-[var(--scl-border)]">
+          <button onClick={() => setShowLogin(true)} className="haptic-tap flex items-center gap-1.5 rounded-xl border border-[#8B7D3C]/30 bg-[#8B7D3C]/10 px-3 py-1.5 transition hover:bg-[#8B7D3C]/20">
             {passenger ? (
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#8B7D3C] text-[10px] font-bold text-white">{passenger.name.charAt(0).toUpperCase()}</span>
             ) : (
-              <I.Phone className="h-4 w-4 text-[var(--scl-text-secondary)]" />
+              <><I.User className="h-4 w-4 text-[#8B7D3C]" /><span className="text-xs font-bold text-[#8B7D3C]">Sign In</span></>
             )}
           </button>
           {showBack && (

@@ -125,7 +125,7 @@ export default function HomeView() {
             <span className="h-1.5 w-1.5 rounded-full bg-[#B8A94E] animate-pulse-soft" />
             Live Trip Tracking
           </div>
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-6xl">
+          <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
             Travel<br className="md:hidden" /> <span className="bg-gradient-to-r from-[#B8A94E] to-[#d4c85a] bg-clip-text text-transparent">Comfortably.</span>
           </h1>
           <p className="mx-auto max-w-lg text-base font-medium text-white/60 md:text-lg">

@@ -151,9 +151,12 @@ export default function AllTripsView() {
               >
                 {/* Route badge */}
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="rounded-lg bg-[#8B7D3C]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#8B7D3C]">
-                    {sr.routePasses ? sr.vehicleType : ""}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <img src="/kangaroo-logo.png" alt="" className="h-4 w-auto" />
+                    <span className="rounded-lg bg-[#8B7D3C]/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8B7D3C]">
+                      {sr.vehicleType}
+                    </span>
+                  </div>
                   <span className={`text-[11px] font-bold ${sr.availableSeats <= 4 ? "text-red-500" : "text-[#8B7D3C]"}`}>
                     {sr.availableSeats} seats
                   </span>
@@ -162,8 +165,8 @@ export default function AllTripsView() {
                 {/* Route */}
                 <div className="mb-4 flex items-center gap-3">
                   <div className="text-center">
-                    <p className="text-xl font-extrabold text-[var(--scl-text)]">{sr.departure}</p>
-                    <p className="text-xs font-semibold text-[var(--scl-text-secondary)]">{sr.trip.routes?.origin ?? "—"}</p>
+                    <p className="text-lg font-extrabold text-[var(--scl-text)]">{sr.departure}</p>
+                    <p className="text-[10px] font-semibold text-[var(--scl-text-secondary)]">{sr.trip.routes?.origin ?? "—"}</p>
                   </div>
                   <div className="flex flex-1 items-center justify-center">
                     <div className="h-px flex-1 bg-[var(--scl-border)]" />
@@ -173,8 +176,8 @@ export default function AllTripsView() {
                     <div className="h-px flex-1 bg-[var(--scl-border)]" />
                   </div>
                   <div className="text-center">
-                    <p className="text-xl font-extrabold text-[var(--scl-text)]">{sr.arrival}</p>
-                    <p className="text-xs font-semibold text-[var(--scl-text-secondary)]">{sr.trip.routes?.destination ?? "—"}</p>
+                    <p className="text-lg font-extrabold text-[var(--scl-text)]">{sr.arrival}</p>
+                    <p className="text-[10px] font-semibold text-[var(--scl-text-secondary)]">{sr.trip.routes?.destination ?? "—"}</p>
                   </div>
                 </div>
 
@@ -184,7 +187,7 @@ export default function AllTripsView() {
                     <p className="text-xs text-[var(--scl-text-secondary)]">{sr.saccoName} · {sr.plate}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
+                    <p className="text-base font-extrabold text-[#8B7D3C]">{money(sr.price)}</p>
                   </div>
                 </div>
               </div>

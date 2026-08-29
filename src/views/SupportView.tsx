@@ -43,29 +43,41 @@ export default function SupportView() {
       </div>
 
       <div className="mx-auto max-w-2xl px-4 py-6 space-y-6">
-        {/* Quick contact cards */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Contact cards — all Kangaroo branches */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-[var(--scl-text)]">Contact Us</h3>
+          {[
+            { branch: "Kitale", phone: "0728944406", color: "emerald" },
+            { branch: "Eldoret", phone: "0727698996", color: "blue" },
+            { branch: "Nakuru", phone: "0727360080", color: "purple" },
+          ].map((c) => (
+            <a
+              key={c.branch}
+              href={`tel:+254${c.phone.slice(1)}`}
+              className="flex items-center gap-4 rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-sm transition hover:shadow-md active:scale-[0.98]"
+            >
+              <div className={`flex h-11 w-11 items-center justify-center rounded-full bg-${c.color}-500/10`}>
+                <I.Phone className={`h-5 w-5 text-${c.color}-500`} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-[var(--scl-text)]">{c.branch} Branch</p>
+                <p className="text-xs text-[var(--scl-text-secondary)]">{c.phone}</p>
+              </div>
+              <span className="rounded-lg bg-[var(--scl-surface-alt)] px-3 py-1.5 text-[10px] font-bold text-[#8B7D3C]">Call</span>
+            </a>
+          ))}
           <a
-            href="tel:+254720363215"
-            className="flex flex-col items-center rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-sm transition hover:shadow-md active:scale-[0.98]"
+            href="mailto:kangarooshuttle@yahoo.com"
+            className="flex items-center gap-4 rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-sm transition hover:shadow-md active:scale-[0.98]"
           >
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10">
-              <I.Phone className="h-6 w-6 text-emerald-500" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-500/10">
+              <I.Phone className="h-5 w-5 text-orange-500" />
             </div>
-            <span className="text-sm font-bold text-[var(--scl-text)]">Call Us</span>
-            <span className="mt-1 text-xs text-[var(--scl-text-secondary)]">0720 363 215</span>
-          </a>
-          <a
-            href="https://wa.me/254720363215"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center rounded-2xl border border-[var(--scl-border)] bg-[var(--scl-card)] p-5 shadow-sm transition hover:shadow-md active:scale-[0.98]"
-          >
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-              <I.Phone className="h-6 w-6 text-green-500" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-[var(--scl-text)]">Email Us</p>
+              <p className="text-xs text-[var(--scl-text-secondary)]">kangarooshuttle@yahoo.com</p>
             </div>
-            <span className="text-sm font-bold text-[var(--scl-text)]">WhatsApp</span>
-            <span className="mt-1 text-xs text-[var(--scl-text-secondary)]">Chat with us</span>
+            <span className="rounded-lg bg-[var(--scl-surface-alt)] px-3 py-1.5 text-[10px] font-bold text-[#8B7D3C]">Email</span>
           </a>
         </div>
 

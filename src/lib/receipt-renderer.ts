@@ -101,7 +101,8 @@ export function renderBookingReceiptHtml(data: ReceiptData, company?: CompanyRec
   const footer = company?.footerText || `Thank you for traveling with ${data.saccoName}! 🦘`;
   lines.push(`<div style="text-align:center;margin-top:6px;font-size:10px">${escape(footer)}</div>`);
   lines.push(`<div style="text-align:center;font-size:9px;margin-top:2px">Show this ticket to the conductor. Safe journey!</div>`);
-  lines.push(`<div style="text-align:center;font-size:9px;margin-top:4px">📞 0720 363 215</div>`);
+  lines.push(`<div style="text-align:center;font-size:9px;margin-top:4px">Kitale: 0728944406 · Eldoret: 0727698996</div>`);
+  lines.push(`<div style="text-align:center;font-size:9px">Nakuru: 0727360080</div>`);
 
   return `<html><head><title>${escape(data.code)}</title><style>
     @page{size:80mm auto;margin:4mm}
