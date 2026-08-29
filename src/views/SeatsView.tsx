@@ -239,7 +239,7 @@ export default function SeatsView() {
             </div>
           </div>
 
-          <div className="relative w-full max-w-[260px] transition-transform duration-300" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
+          <div className="relative w-full max-w-[300px] transition-transform duration-300" style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}>
             {isRealistic && layout ? (
               <div className="relative rounded-b-[24px] border-2 border-zinc-300 bg-gradient-to-b from-white via-white to-zinc-50 shadow-xl overflow-hidden">
                 {/* Roof rails */}
@@ -259,29 +259,39 @@ export default function SeatsView() {
                 </div>
 
                 {/* Side mirrors */}
-                <div className="absolute -left-[10px] top-[68px] h-6 w-3 rounded-l-full border-2 border-zinc-300 bg-white shadow" />
-                <div className="absolute -right-[10px] top-[68px] h-6 w-3 rounded-r-full border-2 border-zinc-300 bg-white shadow" />
+                {/* Left mirror — arm + housing */}
+                <div className="absolute -left-[14px] top-[62px] flex items-center">
+                  <div className="h-[3px] w-2 bg-zinc-300" />
+                  <div className="h-7 w-3.5 rounded-l-full border-2 border-zinc-300 bg-gradient-to-r from-zinc-100 to-white shadow-md" />
+                  <div className="absolute left-[6px] top-[3px] h-5 w-1.5 rounded-l-sm bg-sky-200/60" />
+                </div>
+                {/* Right mirror — arm + housing */}
+                <div className="absolute -right-[14px] top-[62px] flex items-center">
+                  <div className="h-7 w-3.5 rounded-r-full border-2 border-zinc-300 bg-gradient-to-l from-zinc-100 to-white shadow-md" />
+                  <div className="h-[3px] w-2 bg-zinc-300" />
+                  <div className="absolute right-[6px] top-[3px] h-5 w-1.5 rounded-r-sm bg-sky-200/60" />
+                </div>
 
                 {/* Interior */}
-                <div className="px-4 pb-4 pt-1 space-y-2">
+                <div className="px-3 pb-4 pt-1 space-y-2">
                   {/* Cabin row: 1 | 1X | Driver */}
-                  <div className="flex items-end justify-between gap-1 px-1">
-                    <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} width="w-[64px]" />
-                    <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} width="w-[56px]" />
+                  <div className="flex items-end justify-between gap-1">
+                    <RealSeat label="1" state={getState("1")} onClick={() => toggleDisplay("1")} />
+                    <RealSeat label="1X" state={getState("1X")} onClick={() => toggleDisplay("1X")} />
                     <DriverIcon />
                   </div>
 
                   <div className="mx-2 h-px bg-zinc-200" />
 
                   {/* Row 2 — full bench (front passenger row) */}
-                  <div className="flex gap-1.5 px-1">
+                  <div className="flex gap-1.5 px-0.5">
                     {layout.row2.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
                   </div>
 
                   {/* Door / pathway marker */}
-                  <div className="flex items-center gap-1 px-1">
+                  <div className="flex items-center gap-1 px-0.5">
                     <div className="h-8 w-1.5 rounded-r-sm bg-amber-400/60 border border-amber-300/60" />
                     <div className="flex-1 border-b border-dashed border-zinc-200" />
                     <span className="text-[6px] font-bold uppercase tracking-widest text-zinc-300">aisle</span>
@@ -289,7 +299,7 @@ export default function SeatsView() {
                   </div>
 
                   {/* Row 3 — single left + aisle gap + double right (ALL seats same size) */}
-                  <div className="flex items-stretch gap-1 px-1">
+                  <div className="flex items-stretch gap-1.5 px-0.5">
                     <div className="flex-1"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
                     {/* Aisle / pathway from door to back */}
                     <div className="flex w-1.5 flex-col items-center justify-center">
@@ -301,7 +311,7 @@ export default function SeatsView() {
                   </div>
 
                   {/* Row 4 — single left + aisle gap + double right (ALL seats same size) */}
-                  <div className="flex items-stretch gap-1 px-1">
+                  <div className="flex items-stretch gap-1.5 px-0.5">
                     <div className="flex-1"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
                     {/* Aisle continues from row 3 */}
                     <div className="flex w-1.5 flex-col items-center justify-center">
@@ -313,7 +323,7 @@ export default function SeatsView() {
                   </div>
 
                   {/* Rear bench — full width */}
-                  <div className="flex gap-1.5 px-1">
+                  <div className="flex gap-1.5 px-0.5">
                     {layout.rear.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
