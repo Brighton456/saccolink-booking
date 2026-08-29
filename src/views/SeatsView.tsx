@@ -269,7 +269,7 @@ export default function SeatsView() {
                 {/* Interior — dynamic grid based on seat count */}
                 {(() => {
                   const benchCols = 4; // both 14 and 16 seater have 4 seats per bench row
-                  const aisleCols = is14 ? "0.8fr 12px 1fr 1fr" : "0.8fr 12px 1fr 1fr 1fr";
+                  // Removed: middle rows now use same grid-cols-4 as bench
                   return (
                     <div className="px-3 pb-4 pt-1 space-y-2">
                       {/* Cabin row: 1 | 1X | Driver */}
@@ -296,19 +296,19 @@ export default function SeatsView() {
                         <div className="flex-1 border-b border-dashed border-zinc-200" />
                       </div>
 
-                      {/* Row 3 — [left] [aisle] [right...] */}
-                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: aisleCols }}>
-                        <div className="flex justify-center"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} compact /></div>
-                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
+                      {/* Row 3 — same 4-col grid as bench, aisle in col 2 */}
+                      <div className="grid grid-cols-4 gap-1.5 items-center">
+                        <div><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
+                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l-2 border-dashed border-zinc-300/40" /></div>
                         {layout.row3right.map((lbl: string) => (
                           <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
                       </div>
 
-                      {/* Row 4 — [left] [aisle] [right...] */}
-                      <div className="grid gap-1.5 items-center" style={{ gridTemplateColumns: aisleCols }}>
-                        <div className="flex justify-center"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} compact /></div>
-                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l border-dashed border-zinc-300/50" /></div>
+                      {/* Row 4 — same pattern */}
+                      <div className="grid grid-cols-4 gap-1.5 items-center">
+                        <div><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
+                        <div className="flex items-center justify-center h-full"><div className="h-10 w-px border-l-2 border-dashed border-zinc-300/40" /></div>
                         {layout.row4right.map((lbl: string) => (
                           <div key={lbl}><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
                         ))}
