@@ -178,14 +178,15 @@ export default function SeatsView() {
     row4right: ["10", "9"] as const,
     rear: ["15", "14", "13", "12"] as const,
   };
-  /* 16-seater: 1,1X,cabin → 2,3,4,5,6 → 7,8|9 → 10,11|12 → 13,14,15,16,17 */
+  /* 16-seater: 1,1X,cabin → 2,3,4,5 → 6,7|8 → 9,10|11 → 12,13,14,15
+     Format "2,4,3,3,4" = 2+4+3+3+4 = 16 passenger seats */
   const seats16 = {
-    row2: ["6", "5", "4", "3", "2"] as const,
-    row3left: "9",
-    row3right: ["8", "7"] as const,
-    row4left: "12",
-    row4right: ["11", "10"] as const,
-    rear: ["17", "16", "15", "14", "13"] as const,
+    row2: ["5", "4", "3", "2"] as const,
+    row3left: "8",
+    row3right: ["7", "6"] as const,
+    row4left: "11",
+    row4right: ["10", "9"] as const,
+    rear: ["15", "14", "13", "12"] as const,
   };
   const layout: any = is14 ? seats14 : is16 ? seats16 : null;
 
@@ -267,8 +268,8 @@ export default function SeatsView() {
 
                 {/* Interior — dynamic grid based on seat count */}
                 {(() => {
-                  const benchCols = is14 ? 4 : 5;
-                  const aisleCols = is14 ? "0.8fr_12px_1fr_1fr" : "0.8fr_12px_1fr_1fr_1fr";
+                  const benchCols = 4; // both 14 and 16 seater have 4 seats per bench row
+                  const aisleCols = is14 ? "0.8fr 12px 1fr 1fr" : "0.8fr 12px 1fr 1fr 1fr";
                   return (
                     <div className="px-3 pb-4 pt-1 space-y-2">
                       {/* Cabin row: 1 | 1X | Driver */}
