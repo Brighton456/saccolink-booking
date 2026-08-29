@@ -30,7 +30,16 @@ export default function ResultsView() {
 
     const now = new Date();
     return allTrips
-      .filter((t) => (t.status === "scheduled" || t.status === "boarding") && new Date(t.scheduled_at) > now)
+      .filter((t) => {
+        if (t.status !== "scheduled" && t.status !== "boarding") return false;
+        /* Filter by the exact date the user searched */
+        const tripDate = t.scheduled_at.slice(0, 10);
+        if (tripDate !== searchParams.date) return false;
+        /* Filter out past trips on that date */
+        const tripTime = new Date(t.scheduled_at);
+        if (tripTime <= now) return false;
+        return true;
+      })
       .map((trip) => {
         const route = trip.routes;
         const vehicle = trip.vehicles;
