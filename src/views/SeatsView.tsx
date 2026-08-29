@@ -288,30 +288,28 @@ export default function SeatsView() {
                     <div className="flex-1 border-b border-dashed border-zinc-200" />
                   </div>
 
-                  {/* Row 3 — single left + aisle + double right */}
-                  <div className="flex items-stretch gap-0 px-1">
+                  {/* Row 3 — single left + aisle gap + double right (ALL seats same size) */}
+                  <div className="flex items-stretch gap-1 px-1">
                     <div className="flex-1"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                    <div className="mx-1 flex w-4 flex-col items-center justify-center">
-                      <div className="h-full w-px border-l border-dashed border-zinc-300" />
+                    {/* Aisle / pathway from door to back */}
+                    <div className="flex w-1.5 flex-col items-center justify-center">
+                      <div className="h-full border-l border-dashed border-zinc-300" />
                     </div>
-                    <div className="flex-[2] flex gap-1.5">
-                      {layout.row3right.map((lbl: string) => (
-                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
-                      ))}
-                    </div>
+                    {layout.row3right.map((lbl: string) => (
+                      <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                    ))}
                   </div>
 
-                  {/* Row 4 — single left + aisle + double right */}
-                  <div className="flex items-stretch gap-0 px-1">
+                  {/* Row 4 — single left + aisle gap + double right (ALL seats same size) */}
+                  <div className="flex items-stretch gap-1 px-1">
                     <div className="flex-1"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                    <div className="mx-1 flex w-4 flex-col items-center justify-center">
-                      <div className="h-full w-px border-l border-dashed border-zinc-300" />
+                    {/* Aisle continues from row 3 */}
+                    <div className="flex w-1.5 flex-col items-center justify-center">
+                      <div className="h-full border-l border-dashed border-zinc-300" />
                     </div>
-                    <div className="flex-[2] flex gap-1.5">
-                      {layout.row4right.map((lbl: string) => (
-                        <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
-                      ))}
-                    </div>
+                    {layout.row4right.map((lbl: string) => (
+                      <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                    ))}
                   </div>
 
                   {/* Rear bench — full width */}
