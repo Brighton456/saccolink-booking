@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-4">
           <div>
             <div className="mb-5 flex items-center">
-              <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="mr-2 h-10 w-auto" style={{ mixBlendMode: "screen" }} />
+              <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="mr-2 h-10 w-auto" />
               <span className="text-2xl font-extrabold tracking-tight">Kangaroo <span className="text-[#B8A94E]">Shuttle</span></span>
             </div>
             <p className="mb-4 text-sm leading-relaxed text-gray-400">

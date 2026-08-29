@@ -21,7 +21,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
 
       {/* Logo */}
       <div className={`relative z-10 mb-6 transition-all duration-700 ${phase === "logo" ? "scale-100 opacity-100" : "scale-110 opacity-100"}`}>
-        <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-28 w-auto drop-shadow-2xl" style={{ animation: "splashPulse 2s ease-in-out infinite", mixBlendMode: "screen" }} />
+        <img src="/kangaroo-logo.png" alt="Kangaroo Shuttle" className="h-28 w-auto drop-shadow-2xl" style={{ animation: "splashPulse 2s ease-in-out infinite" }} />
       </div>
 
       {/* Text */}
