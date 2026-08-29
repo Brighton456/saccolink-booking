@@ -90,11 +90,11 @@ function RealSeat({
 /* ─── Driver seat icon ─── */
 function DriverIcon() {
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="flex h-[68px] w-[52px] items-center justify-center rounded-t-2xl rounded-b-xl border-2 border-[#1e3a5f] bg-[#1e3a5f] shadow-inner">
-        <I.Steering className="h-5 w-5 text-white/40" />
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="flex h-[52px] w-[38px] items-center justify-center rounded-t-2xl rounded-b-xl border-2 border-[#1e3a5f] bg-[#1e3a5f] shadow-inner">
+        <I.Steering className="h-4 w-4 text-white/40" />
       </div>
-      <span className="text-[7px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
+      <span className="text-[6px] font-bold uppercase tracking-widest text-zinc-400">Driver</span>
     </div>
   );
 }
@@ -284,7 +284,7 @@ export default function SeatsView() {
                   <div className="mx-2 h-px bg-zinc-200" />
 
                   {/* Row 2 — full bench (front passenger row) */}
-                  <div className="flex gap-1.5 px-0.5">
+                  <div className="flex gap-1 px-0.5">
                     {layout.row2.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
@@ -298,32 +298,31 @@ export default function SeatsView() {
                     <div className="flex-1 border-b border-dashed border-zinc-200" />
                   </div>
 
-                  {/* Row 3 — single left + aisle gap + double right (ALL seats same size) */}
-                  <div className="flex items-stretch gap-1.5 px-0.5">
+                  {/* Row 3 — single left + aisle + double right */}
+                  <div className="flex items-stretch gap-0 px-0.5">
                     <div className="flex-1"><RealSeat label={layout.row3left} state={getState(layout.row3left)} onClick={() => toggleDisplay(layout.row3left)} /></div>
-                    {/* Aisle / pathway from door to back */}
-                    <div className="flex w-1.5 flex-col items-center justify-center">
-                      <div className="h-full border-l border-dashed border-zinc-300" />
+                    {/* Thin dashed aisle */}
+                    <div className="w-2 border-l border-dashed border-zinc-300/60" />
+                    <div className="flex-[2] flex gap-1">
+                      {layout.row3right.map((lbl: string) => (
+                        <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                      ))}
                     </div>
-                    {layout.row3right.map((lbl: string) => (
-                      <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
                   </div>
 
-                  {/* Row 4 — single left + aisle gap + double right (ALL seats same size) */}
-                  <div className="flex items-stretch gap-1.5 px-0.5">
+                  {/* Row 4 — same pattern */}
+                  <div className="flex items-stretch gap-0 px-0.5">
                     <div className="flex-1"><RealSeat label={layout.row4left} state={getState(layout.row4left)} onClick={() => toggleDisplay(layout.row4left)} /></div>
-                    {/* Aisle continues from row 3 */}
-                    <div className="flex w-1.5 flex-col items-center justify-center">
-                      <div className="h-full border-l border-dashed border-zinc-300" />
+                    <div className="w-2 border-l border-dashed border-zinc-300/60" />
+                    <div className="flex-[2] flex gap-1">
+                      {layout.row4right.map((lbl: string) => (
+                        <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
+                      ))}
                     </div>
-                    {layout.row4right.map((lbl: string) => (
-                      <div key={lbl} className="flex-1"><RealSeat label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} /></div>
-                    ))}
                   </div>
 
                   {/* Rear bench — full width */}
-                  <div className="flex gap-1.5 px-0.5">
+                  <div className="flex gap-1 px-0.5">
                     {layout.rear.map((lbl: string) => (
                       <RealSeat key={lbl} label={lbl} state={getState(lbl)} onClick={() => toggleDisplay(lbl)} />
                     ))}
@@ -373,22 +372,22 @@ export default function SeatsView() {
             )}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 rounded-2xl bg-[var(--scl-surface-alt)] px-5 py-3">
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-[#8B7D3C]/25 bg-white" /><span className="text-[10px] font-bold text-[var(--scl-text-secondary)]">Available</span></div>
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-[#B8A94E] bg-[#B8A94E]" /><span className="text-[10px] font-bold text-amber-600">Selected ({selectedDisplay.size})</span></div>
-            <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border-2 border-red-300/60 bg-red-100/80 opacity-60" /><span className="text-[10px] font-bold text-red-400">Booked</span></div>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 rounded-xl bg-[var(--scl-surface-alt)] px-3 py-2">
+            <div className="flex items-center gap-1.5"><div className="h-3.5 w-3.5 rounded border-2 border-[#8B7D3C]/25 bg-white" /><span className="text-[9px] font-bold text-[var(--scl-text-secondary)]">Available</span></div>
+            <div className="flex items-center gap-1.5"><div className="h-3.5 w-3.5 rounded border-2 border-[#B8A94E] bg-[#B8A94E]" /><span className="text-[9px] font-bold text-amber-600">Selected ({selectedDisplay.size})</span></div>
+            <div className="flex items-center gap-1.5"><div className="h-3.5 w-3.5 rounded border-2 border-red-300/60 bg-red-100/80 opacity-60" /><span className="text-[9px] font-bold text-red-400">Booked</span></div>
           </div>
 
           {selectedDisplay.size > 0 && (
-            <div className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 px-4 py-3 animate-slide-down">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8B7D3C] text-white text-xs font-bold">{selectedDisplay.size}</div>
+            <div className="mt-3 flex w-full items-center justify-between rounded-xl border border-[#8B7D3C]/20 bg-[#8B7D3C]/5 px-3 py-2 animate-slide-down">
+              <div className="flex items-center gap-1.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#8B7D3C] text-white text-[10px] font-bold">{selectedDisplay.size}</div>
                 <div>
-                  <p className="text-xs font-bold text-[var(--scl-text)]">{selectedDisplay.size === 1 ? "Seat" : "Seats"} selected</p>
-                  <p className="text-[10px] font-semibold text-[#8B7D3C]">{[...selectedDisplay].sort((a,b)=> (a==="1X"? 1 : parseInt(a)) - (b==="1X"?1:parseInt(b))).join(", ")}</p>
+                  <p className="text-[10px] font-bold text-[var(--scl-text)]">{selectedDisplay.size === 1 ? "Seat" : "Seats"} selected</p>
+                  <p className="text-[9px] font-semibold text-[#8B7D3C]">{[...selectedDisplay].sort((a,b)=> (a==="1X"? 1 : parseInt(a)) - (b==="1X"?1:parseInt(b))).join(", ")}</p>
                 </div>
               </div>
-              <p className="text-lg font-extrabold text-[#8B7D3C]">{money(total)}</p>
+              <p className="text-base font-extrabold text-[#8B7D3C]">{money(total)}</p>
             </div>
           )}
         </div>
@@ -428,13 +427,13 @@ export default function SeatsView() {
           </div>
         </div>
 
-        <div className="fixed bottom-16 left-0 right-0 z-40 border-t border-[var(--scl-border)] bg-[var(--scl-card)] p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:hidden">
+        <div className="fixed bottom-14 left-0 right-0 z-40 border-t border-[var(--scl-border)] bg-[var(--scl-card)] px-3 py-2 shadow-[0_-6px_12px_rgba(0,0,0,0.04)] md:hidden">
           <div className="flex items-center justify-between">
-            <button onClick={() => setShowSummary(true)} className="text-xs font-bold text-[#8B7D3C]">{selectedDisplay.size || 0} seat{(selectedDisplay.size || 0) !== 1 ? "s" : ""} · Tap for details</button>
-            <span className="text-xl font-extrabold text-[var(--scl-text)]">{money(total)}</span>
+            <button onClick={() => setShowSummary(true)} className="text-[10px] font-bold text-[#8B7D3C]">{selectedDisplay.size || 0} seat{(selectedDisplay.size || 0) !== 1 ? "s" : ""} · Tap for details</button>
+            <span className="text-base font-extrabold text-[var(--scl-text)]">{money(total)}</span>
           </div>
-          <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`mt-3 w-full rounded-2xl py-3.5 text-base font-bold shadow-md transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
-            Continue <I.ArrowRight className="ml-1 inline h-4 w-4" />
+          <button disabled={selectedDisplay.size === 0} onClick={handleContinue} className={`mt-1.5 w-full rounded-xl py-2.5 text-sm font-bold shadow-sm transition-all ${selectedDisplay.size > 0 ? "bg-gradient-to-r from-[#B8A94E] to-[#8B7D3C] text-white shadow-[#8B7D3C]/25 active:scale-[0.98]" : "cursor-not-allowed bg-[var(--scl-surface-alt)] text-[var(--scl-text-secondary)]"}`}>
+            Continue <I.ArrowRight className="ml-1 inline h-3 w-3" />
           </button>
         </div>
       </div>
