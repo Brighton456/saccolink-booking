@@ -51,6 +51,12 @@ export default function ConfirmationView() {
     return () => clearTimeout(t);
   }, []);
 
+  const receiptCode = `SCL-${Date.now().toString(36).toUpperCase()}`;
+  const bookingTime = new Date().toLocaleString("en-KE");
+  const tripDate = new Date(selectedTrip.trip.scheduled_at).toLocaleDateString("en-KE", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
+
   const receiptData = useCallback((): ReceiptData => ({
     code: receiptCode,
     seat: selectedSeats.map((s) => s === 2 ? "1X" : String(s)).join(", "),
@@ -93,12 +99,6 @@ export default function ConfirmationView() {
     };
     fetchTemplate();
   }, []);
-
-  const receiptCode = `SCL-${Date.now().toString(36).toUpperCase()}`;
-  const bookingTime = new Date().toLocaleString("en-KE");
-  const tripDate = new Date(selectedTrip.trip.scheduled_at).toLocaleDateString("en-KE", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  });
 
   return (
     <div className="min-h-screen animate-fade-in bg-[var(--scl-surface-alt)] pb-32">
