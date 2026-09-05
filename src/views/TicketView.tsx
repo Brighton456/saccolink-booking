@@ -104,7 +104,7 @@ export default function TicketView() {
 
   const handleShare = useCallback(async (method: string) => {
     haptic("tap");
-    const text = `🚌 SaccoLink Boarding Pass\n🎫 Ref: ${booking.bookingRef}\n👤 ${passenger?.name}\n💺 Seat(s): ${seats?.join(", ")}\n💰 ${money(booking.amount as number)}\n\nBook at saccolink.co.ke`;
+    const text = `🚌 BrightLink Fleet Management System Boarding Pass\n🎫 Ref: ${booking.bookingRef}\n👤 ${passenger?.name}\n💺 Seat(s): ${seats?.join(", ")}\n💰 ${money(booking.amount as number)}\n\nBook at saccolink.co.ke`;
 
     if (method === "copy") {
       try {
@@ -115,7 +115,7 @@ export default function TicketView() {
       }
     } else if (method === "share" && navigator.share) {
       try {
-        await navigator.share({ title: "SaccoLink Ticket", text });
+        await navigator.share({ title: "BrightLink Fleet Management System Ticket", text });
       } catch { /* user cancelled */ }
     }
     setShareMenuOpen(false);

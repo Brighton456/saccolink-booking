@@ -118,7 +118,7 @@ export default function ConfirmationView() {
           <div className="border-b border-[var(--scl-border)] bg-[var(--scl-surface-alt)] px-6 py-4 text-center">
             <div className="mb-2 flex items-center justify-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8B7D3C] text-xs font-bold text-white">S</div>
-              <span className="text-sm font-extrabold">SaccoLink</span>
+              <span className="text-sm font-extrabold">BrightLink Fleet Management System</span>
             </div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--scl-text-secondary)]">Digital Boarding Ticket</p>
           </div>

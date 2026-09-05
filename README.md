@@ -1,6 +1,6 @@
-# SaccoLink Passenger Booking Portal
+# BrightLink Fleet Management System Passenger Booking Portal
 
-A standalone, public-facing booking portal for SaccoLink passengers. Built with React, Tailwind CSS, Supabase, and BrightPay.
+A standalone, public-facing booking portal for BrightLink Fleet Management System passengers. Built with React, Tailwind CSS, Supabase, and BrightPay.
 
 ## Features
 
@@ -40,7 +40,7 @@ npm run dev
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
 - **Payments**: BrightPay M-Pesa STK Push (frontend-only integration)
-- **Database**: Same database as the main SaccoLink admin system
+- **Database**: Same database as the main BrightLink Fleet Management System admin system
 
 ## How the Payment Flow Works
 
